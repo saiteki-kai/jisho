@@ -1,0 +1,3 @@
+# jisho
+
+Japanese Dictionary App
