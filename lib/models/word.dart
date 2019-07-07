@@ -3,12 +3,16 @@ class Word {
   List<Kanji> kanji;
   List<Kana> kana;
   List<Sense> sense;
+  bool favorited;
+  bool visited;
 
   Word({
     this.id,
     this.kanji,
     this.kana,
     this.sense,
+    this.favorited,
+    this.visited
   });
 
   factory Word.fromMap(Map<String, dynamic> map) => new Word(
@@ -16,6 +20,8 @@ class Word {
     kanji: new List<Kanji>.from(map["kanji"].map((x) => Kanji.fromMap(x))),
     kana: new List<Kana>.from(map["kana"].map((x) => Kana.fromMap(x))),
     sense: new List<Sense>.from(map["sense"].map((x) => Sense.fromMap(x))),
+    favorited: map["favorited"],
+    visited: map["visited"]
   );
 
   Map<String, dynamic> toMap() => {
@@ -23,6 +29,8 @@ class Word {
     "kanji": new List<dynamic>.from(kanji.map((x) => x.toMap())),
     "kana": new List<dynamic>.from(kana.map((x) => x.toMap())),
     "sense": new List<dynamic>.from(sense.map((x) => x.toMap())),
+    "favorited": favorited,
+    "visited": visited
   };
 }
 

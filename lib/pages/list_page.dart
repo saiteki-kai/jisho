@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:jisho/model/word.dart';
+import 'package:jisho/models/word.dart';
 import 'package:jisho/data/repository.dart';
 import 'package:jisho/widgets/search_bar.dart';
 import 'package:jisho/widgets/word_list.dart';
@@ -10,7 +10,7 @@ class ListPage extends StatefulWidget {
   State<StatefulWidget> createState() => ListPageState();
 }
 
-class ListPageState extends State<ListPage> {
+class ListPageState extends State<ListPage> with SingleTickerProviderStateMixin {
   MapEntry<String, List<Word>> _old;
   String _input;
 
@@ -41,10 +41,11 @@ class ListPageState extends State<ListPage> {
 
   @override
   void initState() {
+    super.initState();
     print("init");
+
     _old = Repository.get().getLastSearch();
     updateSearch(_old.key);
-    super.initState();
   }
 
   @override

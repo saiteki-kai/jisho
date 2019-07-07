@@ -1,5 +1,5 @@
 import 'package:jisho/data/database.dart';
-import 'package:jisho/model/word.dart';
+import 'package:jisho/models/word.dart';
 
 class Repository {
 
@@ -29,6 +29,26 @@ class Repository {
     var words = await database.findWords(query);
     _lastSearch = MapEntry<String, List<Word>>(query, words);
     return words;
+  }
+
+  Future<List<Word>> getFavoriteWords() async {
+    return await database.getWords("favorite");
+  }
+
+  Future<List<Word>> getVisitedWords() async {
+    return await database.getWords("visited");
+  }
+
+  Future<Word> addFavoriteWord(String id) async {
+    return await database.updateWord(id, "favorite", true);
+  }
+
+  Future<Word> removeFavoriteWord(String id) async {
+    return await database.updateWord(id, "favorite", false);
+  }
+
+  Future<Word> setVisitedWord(String id) async {
+    return await database.updateWord(id, "visited", true);
   }
 
   MapEntry<String, List<Word>> getLastSearch() {

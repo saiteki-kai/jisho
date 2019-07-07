@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:jisho/model/word.dart';
+import 'package:jisho/models/word.dart';
 import 'package:jisho/utils/dictionary.dart';
 
 class WordItem extends StatelessWidget {
@@ -8,12 +8,20 @@ class WordItem extends StatelessWidget {
 
   WordItem(this.word);
 
-  Container wordWidget(Word word) => Container(
-        child: new Text(
-          word.kanji[0].text,
-          style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
-        ),
-      );
+  Container wordWidget(Word word) {
+    var text = "";
+    if (word.kanji.length > 0)
+      text = word.kanji[0].text;
+    else
+      text = word.kana[0].text;
+
+    return Container(
+      child: new Text(
+        text,
+        style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
 
   Container othersWidget(otherForms) {
     return Container(
@@ -62,10 +70,12 @@ class WordItem extends StatelessWidget {
 
   List<Widget> buildChildren(Word word) {
     var otherForms = <Widget>[];
-    for (var k in word.kanji.sublist(1)) {
-      otherForms.add(
-          new Text(k.text, style: TextStyle(fontWeight: FontWeight.w600)));
-    }
+
+    if (word.kanji.length > 0)
+      for (var k in word.kanji.sublist(1)) {
+        otherForms.add(
+            new Text(k.text, style: TextStyle(fontWeight: FontWeight.w600)));
+      }
 
     return [
       wordWidget(word),

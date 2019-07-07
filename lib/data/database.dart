@@ -1,7 +1,8 @@
 import 'package:mongo_dart/mongo_dart.dart';
 
 import 'package:jisho/data/crendentials.dart';
-import 'package:jisho/model/word.dart';
+import 'package:jisho/models/word.dart';
+import 'package:jisho/utils/japanese.dart';
 
 class WordDatabase {
   static final _wordDatabase = new WordDatabase._internal();
@@ -43,17 +44,72 @@ class WordDatabase {
   Future<List<Word>> findWords(query) async {
     await _getDb();
 
+    print([
+      Japanese.isKana('か'.codeUnitAt(0)),
+      Japanese.isKana('イ'.codeUnitAt(0)),
+
+      Japanese.isKana('k'.codeUnitAt(0)),
+      Japanese.isKana('i'.codeUnitAt(0)),
+
+      Japanese.isKana('中'.codeUnitAt(0)),
+      Japanese.isKana('人'.codeUnitAt(0)),
+
+      Japanese.isKanji('か'.codeUnitAt(0)),
+      Japanese.isKanji('イ'.codeUnitAt(0)),
+
+      Japanese.isKanji('k'.codeUnitAt(0)),
+      Japanese.isKanji('i'.codeUnitAt(0)),
+
+      Japanese.isKanji('中'.codeUnitAt(0)),
+      Japanese.isKanji('人'.codeUnitAt(0)),
+
+      Japanese.getKanji('i人イ中'),
+    ]);
+
+    var param;
+
+    if (Japanese.hasKanji(query)) {
+      param = "kanji.text";
+    } else if (Japanese.hasKana(query)) {
+      param = "kana.text";
+    } else {
+      param = "sense.gloss.text";
+    }
+
     var result = await db
         .collection('words')
-        .find(where.match("kanji.text", "^$query"))
+        .find(where.match(param, "^$query"))
         .toList();
 
     List<Word> words = [];
 
-    for(Map<String, dynamic> map in result) {
+    for (Map<String, dynamic> map in result) {
       words.add(new Word.fromMap(map));
     }
 
     return words;
+  }
+
+  Future<List<Word>> getWords(String property) async {
+    await _getDb();
+
+    var result =
+        await db.collection('words').find(where.eq(property, true)).toList();
+
+    List<Word> words = [];
+
+    for (Map<String, dynamic> map in result) {
+      words.add(new Word.fromMap(map));
+    }
+
+    return words;
+  }
+
+  Future updateWord(String id, String property, bool value) async {
+    await _getDb();
+
+    await db
+        .collection('words')
+        .update(where.eq("id", id), modify.set(property, value));
   }
 }

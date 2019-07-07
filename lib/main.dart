@@ -35,6 +35,8 @@ class HomePage extends State<MainPage> {
     setState(() {
       _selectedIndex = index;
     });
+
+    Repository.get().getVisitedWords().then((x) => print(x)); // prova
   }
 
   @override
@@ -48,10 +50,10 @@ class HomePage extends State<MainPage> {
     return MaterialApp(
       title: 'Jisho',
       home: Scaffold(
-        appBar: AppBar(
+        appBar: new AppBar(
           title: Text('Jisho'),
           backgroundColor: Colors.red[400],
-          elevation: _selectedIndex == 0 ? 0 : 4,
+          elevation: _selectedIndex == 0 ? 0 : 4
         ),
         body: Center(
           child: _widgetOptions.elementAt(_selectedIndex),
