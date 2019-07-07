@@ -42,15 +42,18 @@ class WordDatabase {
 
   Future<List<Word>> findWords(query) async {
     await _getDb();
+
     var result = await db
         .collection('words')
         .find(where.match("kanji.text", "^$query"))
         .toList();
 
     List<Word> words = [];
+
     for(Map<String, dynamic> map in result) {
       words.add(new Word.fromMap(map));
     }
+
     return words;
   }
 }

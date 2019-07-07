@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:jisho/model/word.dart';
 import 'package:jisho/data/repository.dart';
+import 'package:jisho/widgets/search_bar.dart';
 import 'package:jisho/widgets/word_list.dart';
 
 class ListPage extends StatefulWidget {
@@ -10,12 +11,13 @@ class ListPage extends StatefulWidget {
 }
 
 class ListPageState extends State<ListPage> {
-  var _input;
+  MapEntry<String, List<Word>> _old;
+  String _input;
 
   Future<List<Word>> _fetchData(query) async {
-    print("fetch: $query");
-
     if (query == null || query == "") return null;
+
+    if (query == _old.key) return _old.value;
 
     return await Repository.get().findWords(query);
   }
@@ -29,12 +31,20 @@ class ListPageState extends State<ListPage> {
                     fontWeight: FontWeight.w600,
                     color: Colors.grey[800],
                     fontSize: 120.0)),
-          ))); // aggiungere ricerca per radicali
+          )));
 
   updateSearch(value) {
     setState(() {
       _input = value;
     });
+  }
+
+  @override
+  void initState() {
+    print("init");
+    _old = Repository.get().getLastSearch();
+    updateSearch(_old.key);
+    super.initState();
   }
 
   @override
@@ -73,53 +83,6 @@ class ListPageState extends State<ListPage> {
               })
         ],
       ),
-    );
-  }
-}
-
-class SearchBar extends StatelessWidget {
-  final Function update;
-  SearchBar(this.update);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(color: Colors.red[400], boxShadow: [
-          BoxShadow(
-            color: Colors.grey,
-            blurRadius: 5.0,
-          )
-        ]),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(5)),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: SearchField(update),
-            ),
-          ),
-        ));
-  }
-}
-
-class SearchField extends StatelessWidget {
-  final Function update;
-  SearchField(this.update);
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      textInputAction: TextInputAction.search,
-      decoration: InputDecoration(
-          hintText: "Search for Kanji, Words and Terms...",
-          border: InputBorder.none,
-          icon: Icon(
-            Icons.search,
-            color: Colors.black.withOpacity(0.5),
-          )),
-      onSubmitted: (value) => update(value),
     );
   }
 }

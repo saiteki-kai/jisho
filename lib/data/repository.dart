@@ -23,8 +23,16 @@ class Repository {
     return database.close();
   }
 
-  Future<List<Word>> findWords(String query) {
-    return database.findWords(query);
+  MapEntry<String, List<Word>> _lastSearch = new MapEntry<String, List<Word>>(null, null);
+
+  Future<List<Word>> findWords(String query) async {
+    var words = await database.findWords(query);
+    _lastSearch = MapEntry<String, List<Word>>(query, words);
+    return words;
+  }
+
+  MapEntry<String, List<Word>> getLastSearch() {
+    return _lastSearch;
   }
 
 }
