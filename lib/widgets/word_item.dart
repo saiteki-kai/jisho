@@ -4,21 +4,31 @@ import 'package:jisho/models/word.dart';
 import 'package:jisho/utils/dictionary.dart';
 
 class WordItem extends StatelessWidget {
-  final word;
+  final Word word;
 
   WordItem(this.word);
 
   Container wordWidget(Word word) {
-    var text = "";
-    if (word.kanji.length > 0)
+    var text = "", common = false;
+    if (word.kanji.length > 0) {
       text = word.kanji[0].text;
-    else
+      common = word.kanji[0].common;
+    }else {
       text = word.kana[0].text;
+      common = word.kana[0].common;
+    }
 
     return Container(
-      child: new Text(
-        text,
-        style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            text,
+            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
+          ),
+          if (common) Text("common", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold), textAlign: TextAlign.end)
+        ],
       ),
     );
   }
@@ -28,7 +38,7 @@ class WordItem extends StatelessWidget {
         child:
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text("Other forms", style: TextStyle(fontWeight: FontWeight.w400)),
-      Row(children: otherForms)
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: otherForms)
     ]));
   }
 

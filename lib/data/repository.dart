@@ -1,4 +1,5 @@
 import 'package:jisho/data/database.dart';
+import 'package:jisho/models/kanji.dart' as k;
 import 'package:jisho/models/word.dart';
 
 class Repository {
@@ -49,6 +50,14 @@ class Repository {
 
   Future<Word> setVisitedWord(String id) async {
     return await database.updateWord(id, "visited", true);
+  }
+
+  Future<List<k.Kanji>> getKanjiList(List<String> text) async {
+    return await database.getKanjiList(text);
+  }
+
+  Future<k.Kanji> getKanji(String text) async {
+    return await database.getKanji(text);
   }
 
   MapEntry<String, List<Word>> getLastSearch() {

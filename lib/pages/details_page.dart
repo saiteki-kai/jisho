@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:jisho/models/word.dart';
 import 'package:jisho/widgets/word_item.dart';
-import 'package:jisho/utils/japanese.dart';
+import 'package:jisho/widgets/kanji_tab.dart';
 
 class DetailPage extends StatelessWidget {
   final Word word;
@@ -16,19 +16,6 @@ class DetailPage extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(children: [WordItem(word), Text("DBPedia")]),
       ));
-
-  Container kanjiWidget(Word word) {
-    if (word.kanji.length > 0)
-      return Container(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(children: [
-          Text("kanji used in this word"),
-          Text(Japanese.getKanji(word.kanji[0].text).join(", "))
-        ]),
-      );
-    else
-      return Container(child: Text("No kanji here."));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +43,7 @@ class DetailPage extends StatelessWidget {
           body: TabBarView(
             children: [
               wordWidget(word),
-              kanjiWidget(word),
+              KanjiTab(word),
               Text("example phrases"),
             ],
           ),

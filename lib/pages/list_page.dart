@@ -10,7 +10,8 @@ class ListPage extends StatefulWidget {
   State<StatefulWidget> createState() => ListPageState();
 }
 
-class ListPageState extends State<ListPage> with SingleTickerProviderStateMixin {
+class ListPageState extends State<ListPage>
+    with SingleTickerProviderStateMixin {
   MapEntry<String, List<Word>> _old;
   String _input;
 
@@ -42,7 +43,6 @@ class ListPageState extends State<ListPage> with SingleTickerProviderStateMixin 
   @override
   void initState() {
     super.initState();
-    print("init");
 
     _old = Repository.get().getLastSearch();
     updateSearch(_old.key);
@@ -50,9 +50,14 @@ class ListPageState extends State<ListPage> with SingleTickerProviderStateMixin 
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: <Widget>[
+    return Scaffold(
+        appBar: new AppBar(
+          title: Text('Jisho'),
+          backgroundColor: Colors.red[400],
+          elevation: 0,
+        ),
+        body: Container(
+            child: Column(children: <Widget>[
           SearchBar(updateSearch),
           FutureBuilder(
               future: _fetchData(_input),
@@ -63,27 +68,21 @@ class ListPageState extends State<ListPage> with SingleTickerProviderStateMixin 
                   case ConnectionState.active:
                   case ConnectionState.waiting:
                     return Expanded(
-                        flex: 1,
-                        child: Center(
+                      child: Center(
                           child: CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.amber),
-                          ),
-                        ));
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.amber))),
+                    );
                   case ConnectionState.done:
                     if (snapshot.hasError)
-                      return Text(
-                        'Error:\n\n${snapshot.error}',
-                        textAlign: TextAlign.center,
-                      );
+                      return Text('Error:\n\n${snapshot.error}',
+                          textAlign: TextAlign.center);
                     else if (snapshot.data == null)
                       return message();
                     else
-                      return WordList(snapshot.data);
+                      return Expanded(child: WordList(snapshot.data));
                 }
-              })
-        ],
-      ),
-    );
+              }),
+        ])));
   }
 }

@@ -2,6 +2,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 
 import 'package:jisho/data/crendentials.dart';
 import 'package:jisho/models/word.dart';
+import 'package:jisho/models/kanji.dart' as k;
 import 'package:jisho/utils/japanese.dart';
 
 class WordDatabase {
@@ -41,33 +42,10 @@ class WordDatabase {
     return db.close();
   }
 
-  Future<List<Word>> findWords(query) async {
+  Future<List<Word>> findWords(String query) async {
     await _getDb();
 
-    print([
-      Japanese.isKana('か'.codeUnitAt(0)),
-      Japanese.isKana('イ'.codeUnitAt(0)),
-
-      Japanese.isKana('k'.codeUnitAt(0)),
-      Japanese.isKana('i'.codeUnitAt(0)),
-
-      Japanese.isKana('中'.codeUnitAt(0)),
-      Japanese.isKana('人'.codeUnitAt(0)),
-
-      Japanese.isKanji('か'.codeUnitAt(0)),
-      Japanese.isKanji('イ'.codeUnitAt(0)),
-
-      Japanese.isKanji('k'.codeUnitAt(0)),
-      Japanese.isKanji('i'.codeUnitAt(0)),
-
-      Japanese.isKanji('中'.codeUnitAt(0)),
-      Japanese.isKanji('人'.codeUnitAt(0)),
-
-      Japanese.getKanji('i人イ中'),
-    ]);
-
-    var param;
-
+    String param;
     if (Japanese.hasKanji(query)) {
       param = "kanji.text";
     } else if (Japanese.hasKana(query)) {
@@ -79,13 +57,11 @@ class WordDatabase {
     var result = await db
         .collection('words')
         .find(where.match(param, "^$query"))
+        .take(10)
         .toList();
 
     List<Word> words = [];
-
-    for (Map<String, dynamic> map in result) {
-      words.add(new Word.fromMap(map));
-    }
+    result.forEach((map) => words.add(new Word.fromMap(map)));
 
     return words;
   }
@@ -111,5 +87,31 @@ class WordDatabase {
     await db
         .collection('words')
         .update(where.eq("id", id), modify.set(property, value));
+  }
+
+  Future<List<k.Kanji>> getKanjiList(List<String> list) async {
+    await _getDb();
+
+    var result = await db.collection('kanji').find({
+      'literal': {"\$in": list}
+    }).toList();
+
+    List<k.Kanji> kanji = [];
+
+    for (var x in list) {
+      var el = result.singleWhere((r) => r["literal"] == x); // keep order
+      if (el != null) kanji.add(k.Kanji.fromMap(el));
+    }
+
+    return kanji;
+  }
+
+  Future<k.Kanji> getKanji(String text) async {
+    await _getDb();
+
+    var result =
+        await db.collection('kanji').findOne(where.eq("literal", text));
+
+    return new k.Kanji.fromMap(result);
   }
 }

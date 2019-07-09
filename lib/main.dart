@@ -3,10 +3,11 @@ import 'package:flutter/rendering.dart';
 
 import 'package:jisho/data/repository.dart';
 import 'package:jisho/pages/list_page.dart';
+import 'package:jisho/pages/history_page.dart';
 
 void main() {
   // debugPaintSizeEnabled = true;
-  runApp(MainPage());
+  runApp(new MainPage());
 }
 
 class MainPage extends StatefulWidget {
@@ -21,13 +22,18 @@ class HomePage extends State<MainPage> {
 
   final List<Widget> _widgetOptions = <Widget>[
     ListPage(),
-    Text(
-      'Index 1: History',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: Favorites',
-      style: optionStyle,
+    HistoryPage(),
+    Scaffold(
+      appBar: new AppBar(
+          title: Text('Jisho'),
+          backgroundColor: Colors.red[400]
+      ),
+      body: Center(
+        child: Text(
+          'Index 2: Favorites',
+          style: optionStyle,
+        ),
+      ),
     ),
   ];
 
@@ -35,8 +41,6 @@ class HomePage extends State<MainPage> {
     setState(() {
       _selectedIndex = index;
     });
-
-    Repository.get().getVisitedWords().then((x) => print(x)); // prova
   }
 
   @override
@@ -50,11 +54,6 @@ class HomePage extends State<MainPage> {
     return MaterialApp(
       title: 'Jisho',
       home: Scaffold(
-        appBar: new AppBar(
-          title: Text('Jisho'),
-          backgroundColor: Colors.red[400],
-          elevation: _selectedIndex == 0 ? 0 : 4
-        ),
         body: Center(
           child: _widgetOptions.elementAt(_selectedIndex),
         ),
