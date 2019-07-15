@@ -1,10 +1,11 @@
 import 'package:jisho/data/database.dart';
 import 'package:jisho/models/kanji.dart' as k;
 import 'package:jisho/models/word.dart';
+import 'package:jisho/models/sentence.dart';
 
 class Repository {
 
-  static final Repository _repo = new Repository._internal();
+  static final _repo = Repository._internal();
 
   WordDatabase database;
 
@@ -24,10 +25,10 @@ class Repository {
     return database.close();
   }
 
-  MapEntry<String, List<Word>> _lastSearch = new MapEntry<String, List<Word>>(null, null);
+  var _lastSearch = MapEntry<String, List<Word>>(null, null);
 
-  Future<List<Word>> findWords(String query) async {
-    var words = await database.findWords(query);
+  Future<List<Word>> findWords(String query, int limit, int skip) async {
+    var words = await database.findWords(query, limit, skip);
     _lastSearch = MapEntry<String, List<Word>>(query, words);
     return words;
   }
@@ -58,6 +59,10 @@ class Repository {
 
   Future<k.Kanji> getKanji(String text) async {
     return await database.getKanji(text);
+  }
+
+  Future<List<Sentence>> findPhrases(String query) async {
+    return await database.findPhrases(query);
   }
 
   MapEntry<String, List<Word>> getLastSearch() {

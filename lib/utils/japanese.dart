@@ -18,7 +18,7 @@ class Japanese {
   }
 
   static List<String> getKanji(String text) {
-    List<int> codes = text.codeUnits.where((code) => isKanji(code)).toList();
+    var codes = text.codeUnits.where((code) => isKanji(code)).toList();
     return codes.map((c) => String.fromCharCode(c)).toList();
   }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:jisho/models/word.dart';
-import 'package:jisho/widgets/word_item.dart';
+import 'package:jisho/widgets/word/word_item.dart';
+import 'package:jisho/data/word_dao.dart';
 import 'package:jisho/pages/details_page.dart';
-import 'package:jisho/data/repository.dart';
 import 'package:jisho/utils/slide.dart';
 
 class WordList extends StatelessWidget {
@@ -29,13 +29,15 @@ class WordList extends StatelessWidget {
 
           index--; // decrease the current index each time
 
-          return new FlatButton(
-            padding: new EdgeInsets.all(16.0),
-            child: new WordItem(words[index]),
+          return FlatButton(
+            padding: EdgeInsets.all(16.0),
+            child: WordItem(words[index]),
             onPressed: () {
-              Repository.get().setVisitedWord(words[index].id);
-              var route =
-                  new Slide(builder: (context) => new DetailPage(words[index]));
+              if (!words[index].visited)
+                WordDao().setVisited(words[index]);
+              var route = Slide(
+                builder: (context) => DetailPage(words[index]),
+              );
               Navigator.push(context, route);
             },
           );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:jisho/widgets/kanji_list.dart';
+import 'package:jisho/widgets/kanji/kanji_list.dart';
 import 'package:jisho/data/repository.dart';
 import 'package:jisho/utils/japanese.dart';
 import 'package:jisho/models/word.dart';
@@ -18,7 +18,7 @@ class KanjiTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (word.kanji.length > 0) {
-      Set<String> set = new Set<String>();
+      var set = Set<String>();
       for (var k in word.kanji) {
         var a = Japanese.getKanji(k.text);
         print(a);

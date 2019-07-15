@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
 
 import 'package:jisho/models/word.dart';
-import 'package:jisho/widgets/word_item.dart';
-import 'package:jisho/widgets/kanji_tab.dart';
+import 'package:jisho/widgets/word/word_item.dart';
+import 'package:jisho/widgets/kanji/kanji_tab.dart';
+import 'package:jisho/widgets/phrases/phrases_tab.dart';
 
 class DetailPage extends StatelessWidget {
   final Word word;
 
   DetailPage(this.word);
 
-  // DBPedia, Frasi Tatoeba, Kanji Usati...
+  // TODO: DBPedia
 
-  Container wordWidget(Word word) => new Container(
-          child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(children: [WordItem(word), Text("DBPedia")]),
-      ));
+  Container wordWidget(Word word) => Container(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              WordItem(word),
+              Text("DBPedia"),
+            ],
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -27,26 +34,28 @@ class DetailPage extends StatelessWidget {
     }
 
     return DefaultTabController(
-        length: 3,
-        child: new Scaffold(
-          appBar: new AppBar(
-              title: Text(_title),
-              backgroundColor: Colors.red[400],
-              bottom: TabBar(
-                tabs: [
-                  Tab(text: "WORD"),
-                  Tab(text: "KANJI"),
-                  Tab(text: "PHRASES"),
-                ],
-                indicatorColor: Colors.white,
-              )),
-          body: TabBarView(
-            children: [
-              wordWidget(word),
-              KanjiTab(word),
-              Text("example phrases"),
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(_title),
+          backgroundColor: Colors.red[400],
+          bottom: TabBar(
+            tabs: [
+              Tab(text: "WORD"),
+              Tab(text: "KANJI"),
+              Tab(text: "PHRASES"),
             ],
+            indicatorColor: Colors.white,
           ),
-        ));
+        ),
+        body: TabBarView(
+          children: [
+            wordWidget(word),
+            KanjiTab(word),
+            PhrasesTab(_title),
+          ],
+        ),
+      ),
+    );
   }
 }

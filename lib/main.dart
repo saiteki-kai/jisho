@@ -1,40 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
-import 'package:jisho/data/repository.dart';
 import 'package:jisho/pages/list_page.dart';
 import 'package:jisho/pages/history_page.dart';
+import 'package:jisho/pages/favorites_page.dart';
+
+// import 'package:flutter/rendering.dart';
 
 void main() {
   // debugPaintSizeEnabled = true;
-  runApp(new MainPage());
+  runApp(App());
 }
 
-class MainPage extends StatefulWidget {
-  HomePage createState() => HomePage();
+class App extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _AppState();
 }
 
-class HomePage extends State<MainPage> {
-  int _selectedIndex = 0;
+class _AppState extends State<App> {
+  var _selectedIndex = 0;
 
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-
-  final List<Widget> _widgetOptions = <Widget>[
+  final _pages = [
     ListPage(),
     HistoryPage(),
-    Scaffold(
-      appBar: new AppBar(
-          title: Text('Jisho'),
-          backgroundColor: Colors.red[400]
-      ),
-      body: Center(
-        child: Text(
-          'Index 2: Favorites',
-          style: optionStyle,
-        ),
-      ),
-    ),
+    FavoritesPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -44,20 +32,18 @@ class HomePage extends State<MainPage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    Repository.get().init(); // could handle init state
-  }
-
-  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Jisho',
+      locale: Locale("ja", "JP"),
       home: Scaffold(
         body: Center(
-          child: _widgetOptions.elementAt(_selectedIndex),
+          child: _pages.elementAt(_selectedIndex),
         ),
         bottomNavigationBar: BottomNavigationBar(
+          selectedItemColor: Colors.red[400],
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.search),
@@ -72,9 +58,6 @@ class HomePage extends State<MainPage> {
               title: Text('Favorites'),
             ),
           ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.red[400],
-          onTap: _onItemTapped,
         ),
       ),
     );

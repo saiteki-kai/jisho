@@ -9,12 +9,13 @@ class SearchField extends StatelessWidget {
     return TextField(
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-          hintText: "Search for Kanji, Words and Terms...",
-          border: InputBorder.none,
-          icon: Icon(
-            Icons.search,
-            color: Colors.black.withOpacity(0.5),
-          )),
+        hintText: "Search for Kanji, Words and Terms...",
+        border: InputBorder.none,
+        icon: Icon(
+          Icons.search,
+          color: Colors.black.withOpacity(0.5),
+        ),
+      ),
       onSubmitted: (value) => update(value),
     );
   }
