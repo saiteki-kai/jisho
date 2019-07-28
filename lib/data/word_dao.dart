@@ -1,53 +1,63 @@
 import 'package:jisho/utils/japanese.dart';
-import 'package:sembast/sembast.dart';
 import 'package:jisho/data/app_database.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:jisho/models/word.dart';
 
 class WordDao {
-  static const WORD_STORE_NAME = 'words';
-
-  final _wordStore = intMapStoreFactory.store(WORD_STORE_NAME);
   Future<Database> get _db async => await AppDatabase.instance.database;
 
-  Future insert(Word word) async {
-    await _wordStore.add(await _db, word.toMap());
-  }
+  Future update(Word word, String property, bool value) async {}
 
-  Future update(Word word, String property, bool value) async {
-    final map = word.toMap();
-    map[property] = value;
+  Future<List<Word>> getWords({String search}) async {
+    if (search != null && search.isNotEmpty) return await find(search);
 
-    final finder = Finder(filter: Filter.equals("id", word.id));
-
-    await _wordStore.update(await _db, map, finder: finder);
+    return null;
   }
 
   Future<List<Word>> find(String search) async {
     String param;
     if (Japanese.hasKanji(search)) {
-      param = "kanji";
+      param = "kanji_text";
     } else if (Japanese.hasKana(search)) {
-      param = "kana";
+      param = "kana_text";
     } else {
-      param = "sense.gloss";
+      param = "gloss";
     }
 
-    final regex = RegExp(param != "sense.gloss" ? "^$search" : "$search");
+    var arg1 = search;
+    var arg2 = search.substring(0, search.length - 1) +
+        String.fromCharCode(search.codeUnitAt(search.length - 1) + 1);
 
-    final finder = Finder(
-        filter: Filter.custom((snapshot) {
-          final list = snapshot.value[param] as List;
-          return list.any((x) => regex.hasMatch(x["text"]));
-        }),
-        sortOrders: [SortOrder("kanji.text")]);
+    var where = (param == "gloss")
+        ? 'WHERE $param LIKE "%$arg1%"'
+        : 'WHERE $param >= "$arg1" AND $param < "$arg2"';
 
-    final recordSnapshots = await _wordStore.find(
-      await _db,
-      finder: finder,
-    );
+    Database db = await _db;
+    var results = await db.rawQuery("""
+      SELECT * FROM 'words' as w
+      INNER JOIN (
+        SELECT DISTINCT(word_id) FROM 'words' 
+        $where
+      ) as ids 
+      ON ids.word_id = w.word_id
+      ORDER BY kanji_common DESC, kana_common DESC,
+               kanji_text ASC, kana_text ASC,
+               word_id ASC, n ASC
+      """);
 
-    return recordSnapshots.map((snapshot) {
-      return Word.fromMap(snapshot.value);
+    var words = Map<String, List>();
+
+    for (var i in results) {
+      var key = i["word_id"];
+
+      if (!words.containsKey(key)) {
+        words[key] = [];
+      }
+      words[key].add(i);
+    }
+
+    return words.entries.map((x) {
+      return Word.fromRecord(x.key, x.value);
     }).toList();
   }
 
@@ -59,18 +69,9 @@ class WordDao {
     update(word, "visited", value);
   }
 
-  Future<List<Word>> _filterByProperty(String property) async {
-    final finder = Finder(filter: Filter.equals(property, true));
+  // ...
 
-    final recordSnapshots = await _wordStore.find(
-      await _db,
-      finder: finder,
-    );
-
-    return recordSnapshots.map((snapshot) {
-      return Word.fromMap(snapshot.value);
-    }).toList();
-  }
+  Future<List<Word>> _filterByProperty(String property) async {}
 
   Future<List<Word>> getHistory() async {
     return _filterByProperty("visited");

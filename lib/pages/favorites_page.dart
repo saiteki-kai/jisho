@@ -1,22 +1,34 @@
 import 'package:flutter/material.dart';
 
-import 'package:jisho/widgets/furigana.dart';
+import 'package:jisho/data/history_dao.dart';
+import 'package:jisho/models/word.dart';
+import 'package:jisho/widgets/word/word_list.dart';
 
-class FavoritesPage extends StatelessWidget {
+class FavoritesPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _FavoritesPageState();
+}
+
+class _FavoritesPageState extends State<FavoritesPage> {
+  Future<List<Word>> history() async => await HistoryDao().getFavorites();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Jisho'),
-        backgroundColor: Colors.red[400],
-      ),
-      body: Center(
-        child: Furigana(
-          fontSize: 40.0,
-          kana: "時間外",
-          furigana: "じかんがい",
-        ),
-      ),
+    return Flex(
+      direction: Axis.vertical,
+      children: <Widget>[
+        Expanded(
+          flex: 1,
+          child: FutureBuilder(
+            future: history(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.data == null)
+                return Center(child: Text("Loading..."));
+              return WordList(snapshot.data);
+            },
+          ),
+        )
+      ],
     );
   }
 }

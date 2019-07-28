@@ -2,7 +2,7 @@ import 'package:jisho/data/word_dao.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 import 'package:jisho/data/crendentials.dart';
-import 'package:jisho/models/word.dart';
+import 'package:jisho/models/word_old.dart';
 import 'package:jisho/models/sentence.dart';
 import 'package:jisho/models/kanji.dart' as k;
 import 'package:jisho/utils/japanese.dart';

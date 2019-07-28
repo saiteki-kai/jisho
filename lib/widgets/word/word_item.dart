@@ -9,27 +9,28 @@ class WordItem extends StatelessWidget {
   WordItem(this.word);
 
   String get title {
-    if (word.kanji.length > 0) {
-      var text = word.kanji[0].text;
-      return "$text 【${associateReading(text)}】";
+    if (word.writings.length > 0 && word.writings[0].kanji != null) {
+      var text = word.writings[0].kanji.text;
+      var reading = word.writings[0].kana.text;
+      return text == null ? reading : "$text【$reading】";
     } else {
-      return word.kana[0].text;
+      return word.writings[0].kana.text;
     }
   }
 
-  List<Kanji> get others {
-    if (word.kanji.length > 0) {
-      return word.kanji.sublist(1);
+  List<Pair> get others {
+    if (word.writings.length > 0) {
+      return word.writings.sublist(1);
     }
 
     return [];
   }
 
   bool get isCommon {
-    if (word.kanji.length > 0) {
-      return word.kanji[0].common;
+    if (word.writings.length > 0 && word.writings[0].kanji != null) {
+      return word.writings[0].kanji.common ?? false;
     } else {
-      return word.kana[0].common;
+      return word.writings[0].kana.common ?? false;
     }
   }
 
@@ -88,8 +89,8 @@ class WordItem extends StatelessWidget {
     var glossesWidget = <Widget>[];
     var oldPart = "";
 
-    for (var s in word.sense) {
-      var glosses = s.gloss.map((x) => x.text).join(", ");
+    for (var s in word.senses) {
+      var glosses = s.gloss.join(", ");
 
       var partsOfSpeech = s.partOfSpeech.map((x) {
         var tag = Dictionary.tags[x];
@@ -111,7 +112,7 @@ class WordItem extends StatelessWidget {
               ),
             Container(
               child: Text(
-                "${word.sense.indexOf(s) + 1}. $glosses",
+                "${word.senses.indexOf(s) + 1}. $glosses",
               ),
             ),
           ],
@@ -129,27 +130,11 @@ class WordItem extends StatelessWidget {
     );
   }
 
-  associateReading(String kanji) {
-    for (var k in word.kana) {
-      if (k.appliesToKanji.any((x) => x == kanji || x == "*")) {
-        return k.text;
-      }
-    }
-
-    return "";
-  }
-
-  // currently unused
-  associateReadings(Word word) {
-    var map = Map<String, String>();
-    word.kanji.forEach((k) => map[k.text] = associateReading(k.text));
-
-    return map;
-  }
-
   List<Widget> buildChildren(Word word) {
     var otherForms = others
-        .map((o) => "${o.text} 【${associateReading(o.text)}】")
+        .map((o) => o.kanji.text == null
+            ? o.kana.text
+            : "${o.kanji.text}【${o.kana.text}】")
         .toList()
         .map((t) => Text(t, style: TextStyle(fontWeight: FontWeight.w400)))
         .toList();

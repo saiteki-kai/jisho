@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:jisho/widgets/kanji/kanji_list.dart';
-import 'package:jisho/data/repository.dart';
+import 'package:jisho/data/kanji_dao.dart';
 import 'package:jisho/utils/japanese.dart';
 import 'package:jisho/models/word.dart';
 
@@ -10,22 +10,19 @@ class KanjiTab extends StatelessWidget {
   KanjiTab(this.word);
 
   getKanji(list) async {
-    return await Repository.get().getKanjiList(list);
+    return await KanjiDao().getKanjiList(list);
   }
 
   final fallbackMessage = Text("No Kanji");
 
   @override
   Widget build(BuildContext context) {
-    if (word.kanji.length > 0) {
+    if (word.writings.length > 0 && word.writings[0].kanji != null) {
       var set = Set<String>();
-      for (var k in word.kanji) {
-        var a = Japanese.getKanji(k.text);
-        print(a);
+      for (var k in word.writings) {
+        var a = Japanese.getKanji(k.kanji.text);
         set.addAll(a);
       }
-
-      print(set);
 
       return Container(
         child: FutureBuilder(

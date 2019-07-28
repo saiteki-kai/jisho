@@ -1,16 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:jisho/data/history_dao.dart';
 
 import 'package:jisho/models/word.dart';
 import 'package:jisho/widgets/word/word_item.dart';
 import 'package:jisho/widgets/kanji/kanji_tab.dart';
 import 'package:jisho/widgets/phrases/phrases_tab.dart';
 
-class DetailPage extends StatelessWidget {
+class DetailPage extends StatefulWidget {
   final Word word;
 
   DetailPage(this.word);
 
-  // TODO: DBPedia
+  @override
+  _DetailPageState createState() => _DetailPageState();
+}
+
+class _DetailPageState extends State<DetailPage> {
+  var _isFavorite = false;
+
+  @override
+  initState() {
+    super.initState();
+    HistoryDao().isFavorite(widget.word).then((value) {
+      setState(() {
+        _isFavorite = value;
+      });
+    });
+  }
 
   Container wordWidget(Word word) => Container(
         child: Padding(
@@ -27,10 +43,12 @@ class DetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var _title = "";
-    if (word.kanji.length > 0) {
-      _title = word.kanji[0].text;
-    } else {
-      _title = word.kana[0].text;
+    if (widget.word.writings.length > 0) {
+      if (widget.word.writings[0].kanji != null) {
+        _title = widget.word.writings[0].kanji.text;
+      } else {
+        _title = widget.word.writings[0].kana.text;
+      }
     }
 
     return DefaultTabController(
@@ -47,11 +65,25 @@ class DetailPage extends StatelessWidget {
             ],
             indicatorColor: Colors.white,
           ),
+          actions: <Widget>[
+            IconButton(
+              icon: _isFavorite
+                  ? Icon(Icons.favorite)
+                  : Icon(Icons.favorite_border),
+              onPressed: () {
+                HistoryDao().setFavorite(widget.word, !_isFavorite).then((val) {
+                  setState(() {
+                    _isFavorite = !_isFavorite;
+                  });
+                });
+              },
+            ),
+          ],
         ),
         body: TabBarView(
           children: [
-            wordWidget(word),
-            KanjiTab(word),
+            wordWidget(widget.word),
+            KanjiTab(widget.word),
             PhrasesTab(_title),
           ],
         ),

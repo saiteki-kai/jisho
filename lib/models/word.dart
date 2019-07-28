@@ -1,179 +1,136 @@
-class Word {
+import 'dart:convert';
+import 'package:equatable/equatable.dart';
+
+class Word extends Equatable {
   String id;
-  List<Kanji> kanji;
-  List<Kana> kana;
-  List<Sense> sense;
-  bool favorited;
-  bool visited;
+  List<Pair> writings;
+  List<Sense> senses;
 
-  Word(
-      {this.id,
-      this.kanji,
-      this.kana,
-      this.sense,
-      this.favorited,
-      this.visited});
+  Word({this.id, this.writings, this.senses}) : super([id, writings, senses]);
 
-  factory Word.fromMap(Map<String, dynamic> map) => new Word(
-      id: map["id"],
-      kanji: map["kanji"] == null
-          ? null
-          : new List<Kanji>.from(map["kanji"].map((x) => Kanji.fromMap(x))),
-      kana: map["kana"] == null
-          ? null
-          : new List<Kana>.from(map["kana"].map((x) => Kana.fromMap(x))),
-      sense: map["sense"] == null
-          ? null
-          : new List<Sense>.from(map["sense"].map((x) => Sense.fromMap(x))),
-      favorited: map["favorited"],
-      visited: map["visited"]);
+  factory Word.fromRecord(String id, List<dynamic> records) {
+    var pairs = Set<Pair>();
+    var senses = Set<Sense>();
+
+    for (var r in records) {
+      pairs.add(
+        Pair(
+          Kana(
+            text: r["kanji_text"],
+            common: r["kanji_common"] == 1 ? true : false,
+            tags: r["kanji_tags"] == null
+                ? []
+                : List<String>.from(jsonDecode(r["kanji_tags"])),
+          ),
+          Kana(
+            text: r["kana_text"],
+            common: r["kana_common"] == 1 ? true : false,
+            tags: List<String>.from(jsonDecode(r["kana_tags"])),
+          ),
+        ),
+      );
+
+      senses.add(
+        Sense(
+          info: r["info"],
+          dialect: List<String>.from(jsonDecode(r["dialect"])),
+          field: List<String>.from(jsonDecode(r["field"])),
+          misc: List<String>.from(jsonDecode(r["misc"])),
+          partOfSpeech: List<String>.from(jsonDecode(r["partOfSpeech"])),
+          gloss: List<String>.from(jsonDecode(r["gloss"])),
+          languageSource: jsonDecode(r["languageSource"]),
+        ),
+      );
+    }
+
+    return Word(id: id, writings: pairs.toList(), senses: senses.toList());
+  }
+
+  factory Word.fromMap(Map<String, dynamic> map) => Word(
+      id: map["text"],
+      writings: List<Pair>.from(map["writings"]),
+      senses: List<Sense>.from(map["sense"]));
 
   Map<String, dynamic> toMap() => {
         "id": id,
-        "kanji": kanji == null
-            ? []
-            : new List<dynamic>.from(kanji.map((x) => x.toMap())),
-        "kana": kana == null
-            ? []
-            : new List<dynamic>.from(kana.map((x) => x.toMap())),
-        "sense": sense == null
-            ? []
-            : new List<dynamic>.from(sense.map((x) => x.toMap())),
-        "favorited": favorited,
-        "visited": visited
+        "writings": writings,
+        "senses": senses,
       };
 }
 
-class Kana {
-  bool common;
-  String text;
-  List<dynamic> tags;
-  List<String> appliesToKanji;
+class Pair extends Equatable {
+  Kana kanji;
+  Kana kana;
 
-  Kana({
-    this.common,
-    this.text,
-    this.tags,
-    this.appliesToKanji,
-  });
+  Pair(this.kanji, this.kana) : super([kanji, kana]);
 
-  factory Kana.fromMap(Map<String, dynamic> map) => new Kana(
-        common: map["common"],
-        text: map["text"],
-        tags: new List<dynamic>.from(map["tags"].map((x) => x)),
-        appliesToKanji:
-            new List<String>.from(map["appliesToKanji"].map((x) => x)),
-      );
-
-  Map<String, dynamic> toMap() => {
-        "common": common,
-        "text": text,
-        "tags": new List<dynamic>.from(tags.map((x) => x)),
-        "appliesToKanji": new List<dynamic>.from(appliesToKanji.map((x) => x)),
-      };
+  @override
+  String toString() {
+    return "$kanji - $kana";
+  }
 }
 
-class Kanji {
-  bool common;
+class Kana extends Equatable {
   String text;
+  bool common;
   List<String> tags;
 
-  Kanji({
-    this.common,
-    this.text,
-    this.tags,
-  });
+  Kana({this.text, this.common, this.tags}) : super([text, common, tags]);
 
-  factory Kanji.fromMap(Map<String, dynamic> map) => new Kanji(
-        common: map["common"],
+  factory Kana.fromMap(Map<String, dynamic> map) => Kana(
         text: map["text"],
-        tags: new List<String>.from(map["tags"].map((x) => x)),
+        common: map["common"],
+        tags: List<String>.from(map["tags"]),
       );
 
   Map<String, dynamic> toMap() => {
-        "common": common,
         "text": text,
-        "tags": new List<dynamic>.from(tags.map((x) => x)),
+        "common": common,
+        "tags": tags,
       };
+
+  @override
+  String toString() {
+    return 'Kana{text: $text}';
+  }
 }
 
-class Sense {
+class Sense extends Equatable {
   List<String> partOfSpeech;
-  List<String> appliesToKanji;
-  List<String> appliesToKana;
-  List<List<dynamic>> related;
-  List<dynamic> antonym;
-  List<dynamic> field;
-  List<dynamic> dialect;
+  List<String> field;
+  List<String> dialect;
   List<String> misc;
-  List<String> info;
+  List<String> gloss;
+  String info;
   List<dynamic> languageSource;
-  List<Gloss> gloss;
 
   Sense({
     this.partOfSpeech,
-    this.appliesToKanji,
-    this.appliesToKana,
-    this.related,
-    this.antonym,
     this.field,
     this.dialect,
     this.misc,
+    this.gloss,
     this.info,
     this.languageSource,
-    this.gloss,
-  });
+  }) : super([partOfSpeech, field, dialect, misc, gloss, info, languageSource]);
 
-  factory Sense.fromMap(Map<String, dynamic> map) => new Sense(
-        partOfSpeech: new List<String>.from(map["partOfSpeech"].map((x) => x)),
-        appliesToKanji:
-            new List<String>.from(map["appliesToKanji"].map((x) => x)),
-        appliesToKana:
-            new List<String>.from(map["appliesToKana"].map((x) => x)),
-        related: new List<List<dynamic>>.from(
-            map["related"].map((x) => new List<dynamic>.from(x.map((x) => x)))),
-        antonym: new List<dynamic>.from(map["antonym"].map((x) => x)),
-        field: new List<dynamic>.from(map["field"].map((x) => x)),
-        dialect: new List<dynamic>.from(map["dialect"].map((x) => x)),
-        misc: new List<String>.from(map["misc"].map((x) => x)),
-        info: new List<String>.from(map["info"].map((x) => x)),
-        languageSource:
-            new List<dynamic>.from(map["languageSource"].map((x) => x)),
-        gloss: new List<Gloss>.from(map["gloss"].map((x) => Gloss.fromMap(x))),
+  factory Sense.fromMap(Map<String, dynamic> map) => Sense(
+        partOfSpeech: List<String>.from(map["partOfSpeech"]),
+        field: List<String>.from(map["field"]),
+        dialect: List<String>.from(map["dialect"]),
+        misc: List<String>.from(map["misc"]),
+        languageSource: List<dynamic>.from(map["languageSource"]),
+        gloss: List<String>.from(map["gloss"]),
+        info: map["info"],
       );
 
   Map<String, dynamic> toMap() => {
-        "partOfSpeech": new List<dynamic>.from(partOfSpeech.map((x) => x)),
-        "appliesToKanji": new List<dynamic>.from(appliesToKanji.map((x) => x)),
-        "appliesToKana": new List<dynamic>.from(appliesToKana.map((x) => x)),
-        "related": new List<dynamic>.from(
-            related.map((x) => new List<dynamic>.from(x.map((x) => x)))),
-        "antonym": new List<dynamic>.from(antonym.map((x) => x)),
-        "field": new List<dynamic>.from(field.map((x) => x)),
-        "dialect": new List<dynamic>.from(dialect.map((x) => x)),
-        "misc": new List<dynamic>.from(misc.map((x) => x)),
-        "info": new List<dynamic>.from(info.map((x) => x)),
-        "languageSource": new List<dynamic>.from(languageSource.map((x) => x)),
-        "gloss": new List<dynamic>.from(gloss.map((x) => x.toMap())),
-      };
-}
-
-class Gloss {
-  String lang;
-  String text;
-
-  Gloss({
-    this.lang,
-    this.text,
-  });
-
-  factory Gloss.fromMap(Map<String, dynamic> map) => new Gloss(
-        lang: map["lang"],
-        text: map["text"],
-      );
-
-  Map<String, dynamic> toMap() => {
-        "lang": lang,
-        "text": text,
+        "partOfSpeech": partOfSpeech,
+        "field": field,
+        "dialect": dialect,
+        "misc": misc,
+        "gloss": gloss,
+        "info": info,
+        "languageSource": languageSource,
       };
 }

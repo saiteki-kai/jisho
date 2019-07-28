@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 import 'package:path/path.dart';
-import 'package:sembast/sembast.dart';
-import 'package:sembast/sembast_io.dart';
+import 'package:flutter/services.dart';
+import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
-
   static final _instance = AppDatabase._();
 
   static get instance => _instance;
@@ -23,10 +22,30 @@ class AppDatabase {
   }
 
   Future _openDatabase() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final path = join(dir.path, 'jisho.db');
+    final databasesPath = await getDatabasesPath();
+    final path = join(databasesPath, 'jisho.db');
 
-    final database = await databaseFactoryIo.openDatabase(path);
+    final exists = await databaseExists(path);
+
+    if (!exists) {
+      print("Creating new copy from asset");
+
+      try {
+        await Directory(dirname(path)).create(recursive: true);
+      } catch (_) {}
+
+      // Copy from asset
+      ByteData data = await rootBundle.load(join("assets", "jisho.db"));
+      List<int> bytes =
+          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+
+      // Write and flush the bytes written
+      await File(path).writeAsBytes(bytes, flush: true);
+    } else {
+      print("Opening existing database");
+    }
+
+    final database = await openDatabase(path);
     _completer.complete(database);
   }
 }

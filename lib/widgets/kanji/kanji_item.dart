@@ -7,15 +7,9 @@ class KanjiItem extends StatelessWidget {
   KanjiItem(this.kanji);
 
   get radicals => kanji.radicals.map((r) => r.radValue);
-  get meanings => kanji.meanings.map((m) => m.meaning).join(", ");
-  get onReadings => kanji.readings
-      .where((r) => r.rType == 'ja_on')
-      .map((r) => r.reading)
-      .join(", ");
-  get kunReadings => kanji.readings
-      .where((r) => r.rType == 'ja_kun')
-      .map((r) => r.reading)
-      .join(", ");
+  get meanings => kanji.meanings.join(", ");
+  get onReadings => kanji.onReadings.join(", ");
+  get kunReadings => kanji.kunReadings.join(", ");
   get jlpt => kanji.jlpt == null ? "" : "\nJLPT N${kanji.jlpt}";
   get grade => kanji.grade == null ? "" : "\ngrade ${kanji.grade}";
   get variant => kanji.variant == null ? "" : kanji.variant.variant;

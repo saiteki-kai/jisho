@@ -15,11 +15,11 @@ class WordBloc {
   }
 
   getWords({String query}) async {
-    _wordsController.sink.add(await _wordDao.find(query));
+    _wordsController.sink.add(await _wordDao.getWords(search: query));
   }
 
   addWord(Word word) async {
-    await _wordDao.insert(word);
+    // await _wordDao.insert(word);
     getWords();
   }
 

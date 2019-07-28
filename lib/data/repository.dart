@@ -1,6 +1,6 @@
 import 'package:jisho/data/database.dart';
 import 'package:jisho/models/kanji.dart' as k;
-import 'package:jisho/models/word.dart';
+import 'package:jisho/models/word_old.dart';
 import 'package:jisho/models/sentence.dart';
 
 class Repository {
