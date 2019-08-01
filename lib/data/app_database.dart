@@ -48,4 +48,12 @@ class AppDatabase {
     final database = await openDatabase(path);
     _completer.complete(database);
   }
+
+  init() async {
+    await database;
+  }
+
+  close() async {
+    (await database).close();
+  }
 }

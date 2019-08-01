@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:jisho/data/repository.dart';
+import 'package:jisho/data/repository_old.dart';
 import 'package:jisho/widgets/phrases/phrases_list.dart';
 
 class PhrasesTab extends StatelessWidget {

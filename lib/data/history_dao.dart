@@ -27,7 +27,18 @@ class HistoryDao {
     );
   }
 
-  Future<bool> isFavorite(Word word) async {
+  Future<bool> isVisited(Word word) async {
+    Database db = await _db;
+    var results = await db.query(
+      "history",
+      where: "word_id = ?",
+      whereArgs: [word.id],
+    );
+
+    return results != null && results.length > 0;
+  }
+
+  Future<bool> isFavorited(Word word) async {
     Database db = await _db;
     var results = await db.query(
       "history",
@@ -35,7 +46,6 @@ class HistoryDao {
       whereArgs: [word.id],
     );
 
-    print(results);
     return results != null && results.length > 0;
   }
 

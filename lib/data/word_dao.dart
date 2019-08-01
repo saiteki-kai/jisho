@@ -6,15 +6,9 @@ import 'package:jisho/models/word.dart';
 class WordDao {
   Future<Database> get _db async => await AppDatabase.instance.database;
 
-  Future update(Word word, String property, bool value) async {}
-
   Future<List<Word>> getWords({String search}) async {
-    if (search != null && search.isNotEmpty) return await find(search);
+    if (search == null || search.isEmpty) return null;
 
-    return null;
-  }
-
-  Future<List<Word>> find(String search) async {
     String param;
     if (Japanese.hasKanji(search)) {
       param = "kanji_text";
@@ -60,6 +54,10 @@ class WordDao {
       return Word.fromRecord(x.key, x.value);
     }).toList();
   }
+
+  // TODO: ......
+
+  Future update(Word word, String property, bool value) async {}
 
   Future setVisited(Word word) async {
     update(word, "visited", true);

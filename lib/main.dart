@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 // import 'package:flutter/rendering.dart';
 
-import 'package:jisho/data/app_database.dart';
-import 'package:jisho/pages/home_page.dart';
+import 'package:jisho/data/repository.dart';
+import 'package:jisho/pages/search_page.dart';
 
 void main() {
   // debugPaintSizeEnabled = true;
-  runApp(MaterialApp(
-    home: SplashScreen(),
-    title: "Jisho",
-  ));
+  runApp(
+    MaterialApp(
+      home: SplashScreen(),
+      title: "Jisho",
+    ),
+  );
 }
 
 class SplashScreen extends StatefulWidget {
@@ -18,16 +20,16 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  Future initDB() => AppDatabase.instance.database;
-
   @override
   void initState() {
     super.initState();
 
-    initDB().then((_) {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => HomePage(),
-      ));
+    Repository.get().init().then((_) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => SearchPage(),
+        ),
+      );
     });
   }
 
@@ -35,7 +37,14 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text("ciao"),
+        child: Text(
+          "辞書",
+          style: TextStyle(
+            fontFamily: "OtsutomeFont",
+            color: Colors.grey[800],
+            fontSize: 140.0,
+          ),
+        ),
       ),
     );
   }

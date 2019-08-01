@@ -21,7 +21,7 @@ class _DetailPageState extends State<DetailPage> {
   @override
   initState() {
     super.initState();
-    HistoryDao().isFavorite(widget.word).then((value) {
+    HistoryDao().isFavorited(widget.word).then((value) {
       setState(() {
         _isFavorite = value;
       });

@@ -1,72 +1,87 @@
-import 'package:jisho/data/database.dart';
-import 'package:jisho/models/kanji.dart' as k;
-import 'package:jisho/models/word_old.dart';
-import 'package:jisho/models/sentence.dart';
+import 'package:jisho/data/app_database.dart';
+import 'package:jisho/data/cache.dart';
+import 'package:jisho/data/history_dao.dart';
+import 'package:jisho/data/word_dao.dart';
+import 'package:jisho/models/word.dart';
 
 class Repository {
-
   static final _repo = Repository._internal();
 
-  WordDatabase database;
+  final _wordDao = WordDao();
+  final _wordCache = Cache<List<Word>>();
+
+  final _historyDao = HistoryDao();
+  final _historyCache = Cache<List<Word>>();
+
+  AppDatabase _database;
 
   static Repository get() {
     return _repo;
   }
 
   Repository._internal() {
-    database = WordDatabase.get();
+    _database = AppDatabase.instance;
   }
 
-  Future init() async{
-    return await database.init();
+  Future init() async {
+    return await _database.init();
   }
 
   Future close() async {
-    return database.close();
+    return await _database.close();
   }
 
-  var _lastSearch = MapEntry<String, List<Word>>(null, null);
-
-  Future<List<Word>> findWords(String query, int limit, int skip) async {
-    var words = await database.findWords(query, limit, skip);
-    _lastSearch = MapEntry<String, List<Word>>(query, words);
-    return words;
+  Future<List<Word>> getWords({String term}) async {
+    if (_wordCache.contains(term)) {
+      return _wordCache.get(term);
+    } else {
+      final result = await _wordDao.getWords(search: term);
+      _wordCache.set(term, result);
+      return result;
+    }
   }
 
-  Future<List<Word>> getFavoriteWords() async {
-    return await database.getWords("favorite");
+  Future<List<Word>> getHistory() async {
+    if (_historyCache.contains("HISTORY")) {
+      return _historyCache.get("HISTORY");
+    } else {
+      final result = await _historyDao.getHistory();
+      _historyCache.set("HISTORY", result);
+      return result;
+    }
   }
 
-  Future<List<Word>> getVisitedWords() async {
-    return await database.getWords("visited");
+  Future<List<Word>> getFavorites() async {
+    if (_historyCache.contains("FAVORITES")) {
+      return _historyCache.get("FAVORITES");
+    } else {
+      final result = await _historyDao.getFavorites();
+      _historyCache.set("FAVORITES", result);
+      return result;
+    }
   }
 
-  Future<Word> addFavoriteWord(String id) async {
-    return await database.updateWord(id, "favorite", true);
+  Future addToHistory(Word word) async {
+    final result = await _historyDao.insert(word);
+    _historyCache.set("HISTORY", null);
+    return result;
   }
 
-  Future<Word> removeFavoriteWord(String id) async {
-    return await database.updateWord(id, "favorite", false);
+  Future deleteFromHistory(Word word) async {
+    return await _historyDao.delete(word);
   }
 
-  Future<Word> setVisitedWord(String id) async {
-    return await database.updateWord(id, "visited", true);
+  Future<bool> isVisitedWord(Word word) async {
+    return await _historyDao.isVisited(word);
   }
 
-  Future<List<k.Kanji>> getKanjiList(List<String> text) async {
-    return await database.getKanjiList(text);
+  Future<bool> isFavoritedWord(Word word) async {
+    return await _historyDao.isFavorited(word);
   }
 
-  Future<k.Kanji> getKanji(String text) async {
-    return await database.getKanji(text);
+  Future setFavorite(Word word, bool value) async {
+    final result = await _historyDao.setFavorite(word, value);
+    _historyCache.remove("FAVORITES");
+    return result;
   }
-
-  Future<List<Sentence>> findPhrases(String query) async {
-    return await database.findPhrases(query);
-  }
-
-  MapEntry<String, List<Word>> getLastSearch() {
-    return _lastSearch;
-  }
-
 }

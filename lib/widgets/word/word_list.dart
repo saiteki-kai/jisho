@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jisho/data/history_dao.dart';
+import 'package:jisho/data/repository.dart';
 
 import 'package:jisho/models/word.dart';
 import 'package:jisho/widgets/word/word_item.dart';
@@ -10,6 +10,8 @@ class WordList extends StatelessWidget {
   final List<Word> words;
 
   WordList(this.words);
+
+  final repository = Repository.get();
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +34,10 @@ class WordList extends StatelessWidget {
         return FlatButton(
           padding: EdgeInsets.all(16.0),
           child: WordItem(words[index]),
-          onPressed: () {
-            HistoryDao().insert(words[index]);
+          onPressed: () async {
+            if (!await repository.isVisitedWord(words[index]))
+              repository.addToHistory(words[index]);
+
             var route = Slide(
               builder: (context) => DetailPage(words[index]),
             );
