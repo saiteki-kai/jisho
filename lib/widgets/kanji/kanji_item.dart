@@ -32,6 +32,7 @@ class KanjiItem extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 50,
+                    fontFamily: "DroidJP",
                   ),
                 ),
               ],
@@ -51,8 +52,8 @@ class KanjiItem extends StatelessWidget {
           ],
         ),
         Text("$meanings\n"),
-        Text("Kun: $kunReadings"),
-        Text("On: $onReadings"),
+        Text("Kun: $kunReadings", style: TextStyle(fontFamily: "DroidJP")),
+        Text("On: $onReadings", style: TextStyle(fontFamily: "DroidJP")),
       ],
       crossAxisAlignment: CrossAxisAlignment.stretch,
     );

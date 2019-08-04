@@ -45,6 +45,7 @@ class WordItem extends StatelessWidget {
             style: TextStyle(
               fontSize: 20.0,
               fontWeight: FontWeight.w600,
+              fontFamily: "DroidJP",
             ),
           ),
           if (isCommon)
@@ -68,7 +69,10 @@ class WordItem extends StatelessWidget {
         children: [
           Text(
             "Other forms",
-            style: TextStyle(fontWeight: FontWeight.w400),
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontFamily: "DroidJP",
+            ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,9 +109,7 @@ class WordItem extends StatelessWidget {
               Container(
                 child: Text(
                   partsOfSpeech,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.w400),
                 ),
               ),
             Container(
@@ -136,7 +138,11 @@ class WordItem extends StatelessWidget {
             ? o.kana.text
             : "${o.kanji.text}【${o.kana.text}】")
         .toList()
-        .map((t) => Text(t, style: TextStyle(fontWeight: FontWeight.w400)))
+        .map((t) => Text(t,
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontFamily: "DroidJP",
+            )))
         .toList();
 
     return [

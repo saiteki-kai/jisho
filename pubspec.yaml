@@ -59,6 +59,9 @@ flutter:
     - family: OtsutomeFont
       fonts:
       - asset: assets/fonts/otsutome_font.ttf
+    - family: DroidJP
+      fonts:
+      - asset: assets/fonts/droid_sans_japanese.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:

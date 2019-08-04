@@ -19,17 +19,13 @@ class WordBloc extends Bloc<WordEvent, WordState> {
       try {
         final List<Word> words = await _repository.getWords(term: event.search);
         if (words == null || words.isEmpty)
-          yield WordsEmpty();
+          yield event.search.isEmpty ? WordsEmpty() : WordsLoaded([]);
         else
           yield WordsLoaded(words);
       } catch (e) {
         print(e);
         yield WordsError();
       }
-    }
-
-    if (event is ClearWords) {
-      yield WordsEmpty();
     }
   }
 }

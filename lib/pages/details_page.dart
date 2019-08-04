@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jisho/data/history_dao.dart';
 
+import 'package:jisho/data/history_dao.dart';
 import 'package:jisho/models/word.dart';
 import 'package:jisho/widgets/word/word_item.dart';
 import 'package:jisho/widgets/kanji/kanji_tab.dart';
@@ -55,7 +55,7 @@ class _DetailPageState extends State<DetailPage> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_title),
+          title: Text(_title, style: TextStyle(fontFamily: "DroidJP")),
           backgroundColor: Colors.red[400],
           bottom: TabBar(
             tabs: [

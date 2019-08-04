@@ -8,8 +8,8 @@ void main() {
   // debugPaintSizeEnabled = true;
   runApp(
     MaterialApp(
-      home: SplashScreen(),
       title: "Jisho",
+      home: SplashScreen(),
     ),
   );
 }

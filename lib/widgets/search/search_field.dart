@@ -23,11 +23,11 @@ class _SearchFieldState extends State<SearchField> {
     return TextField(
       textInputAction: TextInputAction.search,
       controller: _controller,
-      style: TextStyle(fontSize: 19),
+      style: TextStyle(fontSize: 19, fontFamily: "DroidJP"),
       decoration: InputDecoration(
         hintText: "Search for Kanji, Words, Names and Sentences...",
         border: InputBorder.none,
-        contentPadding: EdgeInsets.only(top: 12.8),
+        contentPadding: EdgeInsets.only(top: 10),
         prefixIcon: Icon(
           Icons.search,
           color: Colors.black.withOpacity(0.5),

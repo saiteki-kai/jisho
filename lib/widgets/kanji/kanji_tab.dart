@@ -7,10 +7,11 @@ import 'package:jisho/models/word.dart';
 
 class KanjiTab extends StatelessWidget {
   final Word word;
+
   KanjiTab(this.word);
 
   getKanji(list) async {
-    return await KanjiDao().getKanjiList(list);
+    return await KanjiDao().getKanjiFromList(list);
   }
 
   final fallbackMessage = Text("No Kanji");
@@ -28,26 +29,25 @@ class KanjiTab extends StatelessWidget {
         child: FutureBuilder(
           future: getKanji(set.toList()),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-                return fallbackMessage;
-              case ConnectionState.active:
-              case ConnectionState.waiting:
-                return Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.amber),
-                  ),
+            if (snapshot.connectionState == ConnectionState.active ||
+                snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.amber),
+                ),
+              );
+            } else if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasError)
+                return Text(
+                  'Error:\n\n${snapshot.error}',
+                  textAlign: TextAlign.center,
                 );
-              case ConnectionState.done:
-                if (snapshot.hasError)
-                  return Text(
-                    'Error:\n\n${snapshot.error}',
-                    textAlign: TextAlign.center,
-                  );
-                else if (snapshot.data == null)
-                  return fallbackMessage;
-                else
-                  return KanjiList(snapshot.data);
+              else if (snapshot.data == null)
+                return fallbackMessage;
+              else
+                return KanjiList(snapshot.data);
+            } else {
+              return fallbackMessage;
             }
           },
         ),

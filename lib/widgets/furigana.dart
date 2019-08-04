@@ -14,12 +14,18 @@ class Furigana extends StatelessWidget {
         Text(
           furigana,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: fontSize * 2 / 3),
+          style: TextStyle(
+            fontSize: fontSize * 2 / 3,
+            fontFamily: "DroidJP",
+          ),
         ),
         Text(
           kana,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: fontSize),
+          style: TextStyle(
+            fontSize: fontSize,
+            fontFamily: "DroidJP",
+          ),
         ),
       ],
     );

@@ -1,110 +1,106 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jisho/models/category.dart';
 
-import 'package:jisho/blocs/bloc.dart';
 import 'package:jisho/pages/favorites_page.dart';
 import 'package:jisho/pages/history_page.dart';
 import 'package:jisho/pages/settings_page.dart';
+import 'package:jisho/utils/fade.dart';
+import 'package:jisho/widgets/search_appbar.dart';
 import 'package:jisho/widgets/search_item.dart';
-import 'package:jisho/widgets/search/search_bar.dart';
-import 'package:jisho/widgets/word/word_list.dart';
+import 'package:jisho/widgets/results/search_results.dart';
+import 'package:jisho/widgets/results/words_search_results.dart';
+import 'package:jisho/widgets/results/kanji_search_results.dart';
 
 class SearchPage extends StatefulWidget {
+  final Category category;
+
+  SearchPage({this.category});
+
   @override
   State<StatefulWidget> createState() => SearchPageState();
 }
 
 class SearchPageState extends State<SearchPage> {
-  final _wordBloc = WordBloc();
+  GlobalKey<SearchResultsState> key = GlobalKey();
 
-  Map _selected;
-
-  List options = [
-    {
-      "title": "言葉",
-      "subtitle": "words",
-      "backgroundColor": const Color(0xfff1b136),
-    },
-    {
-      "title": "漢字",
-      "subtitle": "kanji",
-      "backgroundColor": const Color(0xffef6363),
-    },
-    {
-      "title": "名前",
-      "subtitle": "names",
-      "backgroundColor": const Color(0xff13b0a5),
-    },
-    {
-      "title": "文章",
-      "subtitle": "sentences",
-      "backgroundColor": const Color(0xff4fC3f7),
-    }
+  List _categories = [
+    Category(
+      title: "言葉",
+      subtitle: "words",
+      backgroundColor: const Color(0xfff1b136),
+      color: Colors.white,
+    ),
+    Category(
+      title: "漢字",
+      subtitle: "kanji",
+      backgroundColor: const Color(0xffef6363),
+      color: Colors.white,
+    ),
+    Category(
+      title: "名前",
+      subtitle: "names",
+      backgroundColor: const Color(0xff13b0a5),
+      color: Colors.white,
+    ),
+    Category(
+      title: "文章",
+      subtitle: "sentences",
+      backgroundColor: const Color(0xff4fC3f7),
+      color: Colors.white,
+    ),
   ];
 
-  _message() {
-    if (_selected != null) {
-      return Container(
-        decoration: BoxDecoration(color: Colors.white),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SearchItem(
-              title: _selected["title"],
-              subtitle: _selected["subtitle"],
-              backgroundColor: Colors.white,
-              color: Colors.black,
-            ),
-          ],
-        ),
-      );
-    }
+  get category => widget.category;
 
-    List<Widget> children = options.map(
-      (o) {
-        return SearchItem(
-          title: o["title"],
-          subtitle: o["subtitle"],
-          backgroundColor: o["backgroundColor"],
-          color: Colors.white,
-          onSelect: () {
-            setState(() {
-              _selected = o;
-            });
+  // TODO: implement mixed search with expandable sections
+  _buildBody(Widget fallbackMessage) {
+    switch (category?.subtitle) {
+      case "words":
+        return WordsSearchResults(key: key, message: fallbackMessage);
+      case "kanji":
+        return KanjiSearchResults(key: key, message: fallbackMessage);
+      case "names":
+        return WordsSearchResults(key: key, message: fallbackMessage);
+      case "sentences":
+        return WordsSearchResults(key: key, message: fallbackMessage);
+      default:
+        List<Widget> children = _categories.map(
+          (cat) {
+            return SearchItem(
+              category: cat,
+              onSelect: () {
+                Navigator.of(context).push(
+                  FadeRoute(page: SearchPage(category: cat)),
+                );
+              },
+            );
           },
-        );
-      },
-    ).toList();
+        ).toList();
 
-    return LayoutBuilder(builder: (context, constraints) {
-      if (constraints.maxWidth > 600) {
-        return GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          childAspectRatio: constraints.maxWidth / constraints.maxHeight,
-          children: children,
-        );
-      } else {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: children.map((x) => Expanded(child: x)).toList(),
-        );
-      }
-    });
+        return LayoutBuilder(builder: (context, constraints) {
+          if (constraints.maxWidth > 600) {
+            return GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              childAspectRatio: constraints.maxWidth / constraints.maxHeight,
+              children: children,
+            );
+          } else {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: children.map((x) => Expanded(child: x)).toList(),
+            );
+          }
+        });
+    }
   }
 
   updateSearch(value) {
-    print("update: $value");
-    if (_wordBloc.currentState is WordsLoading) {
-      // cancel previous dispatch in same way...??
-    }
-    _wordBloc.dispatch(FetchWords(value));
+    key.currentState.onSearch(value);
   }
 
   clearSearch() {
-    print("close");
-    _wordBloc.dispatch(FetchWords(""));
+    key.currentState.onClear();
   }
 
   Drawer buildDrawer() {
@@ -146,8 +142,8 @@ class SearchPageState extends State<SearchPage> {
           ),
           Divider(),
           ListTile(
-            leading: Icon(Icons.copyright),
-            title: Text('Credits'),
+            leading: Icon(Icons.info),
+            title: Text('About'),
             onTap: () {
               // Update the state of the app.
               // ...
@@ -167,74 +163,37 @@ class SearchPageState extends State<SearchPage> {
     );
   }
 
+  // TODO: Results Number in the AppBar
+  // TODO: Make SearchItem Responsive
+
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      child: Scaffold(
-        drawer: buildDrawer(),
-        appBar: AppBar(
-          iconTheme: IconThemeData(
-            color: _selected == null ? Colors.black : Colors.white,
-          ),
-          title: Text(
-            'Jisho',
-            style: TextStyle(
-              color: _selected == null ? Colors.black : Colors.white,
+    final orientation = MediaQuery.of(context).orientation;
+
+    final fallbackMessage = Container(
+      decoration: BoxDecoration(color: Colors.white),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SearchItem(
+            category: Category(
+              title: category?.title,
+              subtitle: category?.subtitle,
+              backgroundColor: Colors.white,
+              color: Colors.black,
             ),
           ),
-          backgroundColor:
-              _selected == null ? Colors.white : _selected["backgroundColor"],
-          bottom: PreferredSize(
-            child: SearchBar(updateSearch, clearSearch),
-            preferredSize: Size.fromHeight(10.0 + 50.0 + 16.0),
-          ),
-        ),
-        body: Flex(
-          direction: Axis.vertical,
-          children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: BlocBuilder<WordBloc, WordState>(
-                bloc: _wordBloc,
-                builder: (BuildContext context, WordState state) {
-                  print(state.runtimeType);
-                  if (state is WordsLoading) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          _selected == null
-                              ? Colors.amber
-                              : _selected["backgroundColor"],
-                        ),
-                      ),
-                    );
-                  } else if (state is WordsLoaded) {
-                    if (state.words.isEmpty) return Text("No Results");
-                    return WordList(state.words);
-                  } else {
-                    return _message();
-                  }
-                },
-              ),
-            )
-          ],
-        ),
-        resizeToAvoidBottomInset: _selected != null,
+        ],
       ),
-      onWillPop: _onWillPop,
     );
-  }
 
-  Future<bool> _onWillPop() async {
-    if (_selected == null && _wordBloc.currentState is WordsEmpty) {
-      Navigator.of(context).pop();
-      return true;
-    } else {
-      setState(() {
-        _selected = null;
-      });
-      clearSearch();
-      return false;
-    }
+    return Scaffold(
+      drawer: buildDrawer(),
+      appBar: SearchAppBar(category, updateSearch, clearSearch),
+      body: _buildBody(fallbackMessage),
+      resizeToAvoidBottomInset:
+          orientation == Orientation.portrait && category != null,
+    );
   }
 }

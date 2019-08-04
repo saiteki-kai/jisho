@@ -5,6 +5,7 @@ import 'package:jisho/models/sentence.dart';
 class PhraseItem extends StatelessWidget {
   final Sentence sentence;
   final String query;
+
   PhraseItem(this.sentence, this.query);
 
   List<TextSpan> highlight(String sentence, String pattern) {
@@ -45,7 +46,11 @@ class PhraseItem extends StatelessWidget {
       children: <Widget>[
         RichText(
           text: TextSpan(
-            style: TextStyle(color: Colors.black, fontSize: 18),
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontFamily: "DroidJP",
+            ),
             children: highlight(sentence.jpn, query),
           ),
         ),

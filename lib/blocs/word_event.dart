@@ -9,5 +9,3 @@ class FetchWords extends WordEvent {
 
   FetchWords(this.search) : super([search]);
 }
-
-class ClearWords extends WordEvent {}

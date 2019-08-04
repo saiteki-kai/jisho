@@ -5,8 +5,6 @@ import 'package:jisho/pages/search_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jisho/blocs/word_bloc.dart';
 
-GlobalKey<SearchPageState> globalKey = GlobalKey();
-
 class HomePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _HomePageState();
@@ -19,6 +17,8 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  // TODO: Use JP Font just for JP...
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -26,6 +26,7 @@ class _HomePageState extends State<HomePage> {
       child: MaterialApp(
         home: SearchPage(),
         locale: Locale("ja", "JP"),
+        theme: ThemeData(fontFamily: "DroidJP"),
       ),
     );
   }
