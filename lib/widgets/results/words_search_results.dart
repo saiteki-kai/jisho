@@ -26,7 +26,6 @@ class _WordsSearchResultsState extends SearchResultsState {
           child: BlocBuilder<WordBloc, WordState>(
             bloc: _wordBloc,
             builder: (BuildContext context, WordState state) {
-              print(state.runtimeType);
               if (state is WordsLoading) {
                 return Center(
                   child: CircularProgressIndicator(

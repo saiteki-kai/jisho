@@ -36,9 +36,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: Align(
+        alignment: Alignment.center,
         child: Text(
           "辞書",
+          textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: "OtsutomeFont",
             color: Colors.grey[800],

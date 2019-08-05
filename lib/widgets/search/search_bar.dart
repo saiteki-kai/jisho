@@ -3,12 +3,13 @@ import 'package:jisho/widgets/search/search_field.dart';
 
 class SearchBar extends StatelessWidget {
   final Function onSubmit, onClear;
-  SearchBar(this.onSubmit, this.onClear);
+  final Color color;
+
+  SearchBar(this.onSubmit, this.onClear, this.color);
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => print("SearchBar size: ${context.size}"));
+    //WidgetsBinding.instance.addPostFrameCallback((_) => print("SearchBar size: ${context.size}"));
 
     return Padding(
       padding: const EdgeInsets.only(
@@ -19,7 +20,7 @@ class SearchBar extends StatelessWidget {
       ),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.grey[200],
+          color: color,
           borderRadius: BorderRadius.circular(5),
         ),
         child: SearchField(onSubmit, onClear),

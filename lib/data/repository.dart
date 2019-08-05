@@ -2,6 +2,7 @@ import 'package:jisho/data/app_database.dart';
 import 'package:jisho/data/cache.dart';
 import 'package:jisho/data/history_dao.dart';
 import 'package:jisho/data/word_dao.dart';
+import 'package:jisho/models/sentence.dart';
 import 'package:jisho/models/word.dart';
 
 class Repository {
@@ -40,6 +41,8 @@ class Repository {
       return result;
     }
   }
+
+  // TODO: rethink cache for history and favorites
 
   Future<List<Word>> getHistory() async {
     if (_historyCache.contains("HISTORY")) {
@@ -83,5 +86,10 @@ class Repository {
     final result = await _historyDao.setFavorite(word, value);
     _historyCache.remove("FAVORITES");
     return result;
+  }
+
+  Future<List<Sentence>> findPhrases(String query) async {
+    // return await database.findPhrases(query);
+    return Future<List<Sentence>>.value([]);
   }
 }

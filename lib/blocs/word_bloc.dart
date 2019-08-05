@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:jisho/data/repository.dart';
 import 'package:jisho/models/word.dart';
+import 'package:flutter/foundation.dart';
 import './bloc.dart';
 
 class WordBloc extends Bloc<WordEvent, WordState> {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jisho/data/repository.dart';
 import 'package:jisho/models/category.dart';
 
 import 'package:jisho/pages/favorites_page.dart';
@@ -6,7 +7,7 @@ import 'package:jisho/pages/history_page.dart';
 import 'package:jisho/pages/settings_page.dart';
 import 'package:jisho/utils/fade.dart';
 import 'package:jisho/widgets/search_appbar.dart';
-import 'package:jisho/widgets/search_item.dart';
+import 'package:jisho/widgets/category_item.dart';
 import 'package:jisho/widgets/results/search_results.dart';
 import 'package:jisho/widgets/results/words_search_results.dart';
 import 'package:jisho/widgets/results/kanji_search_results.dart';
@@ -20,7 +21,8 @@ class SearchPage extends StatefulWidget {
   State<StatefulWidget> createState() => SearchPageState();
 }
 
-class SearchPageState extends State<SearchPage> {
+class SearchPageState extends State<SearchPage>
+    with SingleTickerProviderStateMixin {
   GlobalKey<SearchResultsState> key = GlobalKey();
 
   List _categories = [
@@ -52,6 +54,38 @@ class SearchPageState extends State<SearchPage> {
 
   get category => widget.category;
 
+  AnimationController _controller;
+  Animation<Offset> _animationLeft, _animationRight;
+
+  @override
+  initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+
+    var curvedAnim = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    );
+
+    _animationLeft = Tween<Offset>(begin: Offset(-1.0, 0.0), end: Offset.zero)
+        .animate(curvedAnim);
+
+    _animationRight = Tween<Offset>(begin: Offset(1.0, 0.0), end: Offset.zero)
+        .animate(curvedAnim);
+
+    _controller.forward();
+  }
+
+  @override
+  dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   // TODO: implement mixed search with expandable sections
   _buildBody(Widget fallbackMessage) {
     switch (category?.subtitle) {
@@ -66,32 +100,38 @@ class SearchPageState extends State<SearchPage> {
       default:
         List<Widget> children = _categories.map(
           (cat) {
-            return SearchItem(
-              category: cat,
-              onSelect: () {
-                Navigator.of(context).push(
-                  FadeRoute(page: SearchPage(category: cat)),
-                );
-              },
+            int index = _categories.indexOf(cat);
+            return SlideTransition(
+              position: index % 2 == 0 ? _animationLeft : _animationRight,
+              child: CategoryButton(
+                category: cat,
+                onSelect: () {
+                  Navigator.of(context).push(
+                    FadeRoute(page: SearchPage(category: cat)),
+                  );
+                },
+              ),
             );
           },
         ).toList();
 
-        return LayoutBuilder(builder: (context, constraints) {
-          if (constraints.maxWidth > 600) {
-            return GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              childAspectRatio: constraints.maxWidth / constraints.maxHeight,
-              children: children,
-            );
-          } else {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: children.map((x) => Expanded(child: x)).toList(),
-            );
-          }
-        });
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth > 600) {
+              return GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap: true,
+                childAspectRatio: constraints.maxWidth / constraints.maxHeight,
+                children: children,
+              );
+            } else {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: children.map((x) => Expanded(child: x)).toList(),
+              );
+            }
+          },
+        );
     }
   }
 
@@ -118,6 +158,7 @@ class SearchPageState extends State<SearchPage> {
             leading: Icon(Icons.favorite),
             title: Text('Favorited'),
             onTap: () {
+              Navigator.of(context).pop();
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => FavoritesPage()),
               );
@@ -127,6 +168,7 @@ class SearchPageState extends State<SearchPage> {
             leading: Icon(Icons.history),
             title: Text('History'),
             onTap: () {
+              Navigator.of(context).pop();
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => HistoryPage()),
               );
@@ -136,8 +178,8 @@ class SearchPageState extends State<SearchPage> {
             leading: Icon(Icons.school),
             title: Text('JLPT'),
             onTap: () {
-              // Update the state of the app.
-              // ...
+              // ....
+              Navigator.of(context).pop();
             },
           ),
           Divider(),
@@ -145,14 +187,15 @@ class SearchPageState extends State<SearchPage> {
             leading: Icon(Icons.info),
             title: Text('About'),
             onTap: () {
-              // Update the state of the app.
               // ...
+              Navigator.of(context).pop();
             },
           ),
           ListTile(
             leading: Icon(Icons.settings),
             title: Text('Settings'),
             onTap: () {
+              Navigator.of(context).pop();
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => SettingsPage()),
               );
@@ -164,7 +207,6 @@ class SearchPageState extends State<SearchPage> {
   }
 
   // TODO: Results Number in the AppBar
-  // TODO: Make SearchItem Responsive
 
   @override
   Widget build(BuildContext context) {
@@ -176,7 +218,7 @@ class SearchPageState extends State<SearchPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SearchItem(
+          CategoryText(
             category: Category(
               title: category?.title,
               subtitle: category?.subtitle,
@@ -188,12 +230,20 @@ class SearchPageState extends State<SearchPage> {
       ),
     );
 
-    return Scaffold(
-      drawer: buildDrawer(),
-      appBar: SearchAppBar(category, updateSearch, clearSearch),
-      body: _buildBody(fallbackMessage),
-      resizeToAvoidBottomInset:
-          orientation == Orientation.portrait && category != null,
+    return WillPopScope(
+      child: Scaffold(
+        drawer: buildDrawer(),
+        appBar: SearchAppBar(category, updateSearch, clearSearch),
+        body: _buildBody(fallbackMessage),
+        resizeToAvoidBottomInset:
+            orientation == Orientation.portrait && category != null,
+      ),
+      onWillPop: () async {
+        if (category == null) {
+          await Repository.get().close();
+        }
+        return true;
+      },
     );
   }
 }
