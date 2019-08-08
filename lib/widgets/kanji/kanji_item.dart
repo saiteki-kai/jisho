@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:jisho/models/kanji.dart';
 
@@ -13,6 +14,7 @@ class KanjiItem extends StatelessWidget {
   get jlpt => kanji.jlpt == null ? "" : "\nJLPT N${kanji.jlpt}";
   get grade => kanji.grade == null ? "" : "\ngrade ${kanji.grade}";
   get variant => kanji.variant == null ? "" : kanji.variant.variant;
+  get code => kanji.literal.codeUnitAt(0);
 
   @override
   Widget build(BuildContext context) {
@@ -51,9 +53,20 @@ class KanjiItem extends StatelessWidget {
             ),
           ],
         ),
-        Text("$meanings\n"),
+        Text("Meanings:"),
+        Text("$meanings", style: TextStyle(fontWeight: FontWeight.w400)),
+        SizedBox(height: 8),
+        Text("Readings:"),
         Text("Kun: $kunReadings", style: TextStyle(fontFamily: "DroidJP")),
         Text("On: $onReadings", style: TextStyle(fontFamily: "DroidJP")),
+        SizedBox(height: 8),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SvgPicture.asset(
+            "assets/kanji_strokes/${code}_frames.svg",
+            height: 60,
+          ),
+        )
       ],
       crossAxisAlignment: CrossAxisAlignment.stretch,
     );
