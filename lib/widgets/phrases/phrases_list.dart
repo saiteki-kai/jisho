@@ -14,15 +14,17 @@ class PhrasesList extends StatelessWidget {
     var count = phrases == null ? 0 : phrases.length;
 
     return Container(
-        child: ListView.separated(
-            shrinkWrap: true,
-            separatorBuilder: (context, index) => Divider(height: 1.0),
-            itemCount: count,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: PhraseItem(phrases[index], query),
-              );
-            }),);
+      child: ListView.separated(
+        shrinkWrap: true,
+        separatorBuilder: (context, index) => Divider(height: 1.0),
+        itemCount: count,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: PhraseItem(phrases[index], query),
+          );
+        },
+      ),
+    );
   }
 }

@@ -1,19 +1,19 @@
 class Sentence {
-  String jpn;
+  String jap;
   String eng;
 
   Sentence({
-    this.jpn,
+    this.jap,
     this.eng,
   });
 
-  factory Sentence.fromMap(Map<String, dynamic> map) => new Sentence(
-    jpn: map["jpn"],
-    eng: map["eng"],
-  );
+  factory Sentence.fromMap(Map<String, dynamic> map) => Sentence(
+        jap: map["jap"],
+        eng: map["eng"],
+      );
 
   Map<String, dynamic> toMap() => {
-    "jpn": jpn,
-    "eng": eng,
-  };
+        "jap": jap,
+        "eng": eng,
+      };
 }

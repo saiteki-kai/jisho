@@ -6,6 +6,7 @@ import 'package:jisho/pages/favorites_page.dart';
 import 'package:jisho/pages/history_page.dart';
 import 'package:jisho/pages/settings_page.dart';
 import 'package:jisho/utils/fade.dart';
+import 'package:jisho/widgets/results/sentences_search_results.dart';
 import 'package:jisho/widgets/search_appbar.dart';
 import 'package:jisho/widgets/category_item.dart';
 import 'package:jisho/widgets/results/search_results.dart';
@@ -96,7 +97,7 @@ class SearchPageState extends State<SearchPage>
       case "names":
         return WordsSearchResults(key: key, message: fallbackMessage);
       case "sentences":
-        return WordsSearchResults(key: key, message: fallbackMessage);
+        return SentencesSearchResults(key: key, message: fallbackMessage);
       default:
         List<Widget> children = _categories.map(
           (cat) {

@@ -17,8 +17,6 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  // TODO: Use JP Font just for JP...
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -26,7 +24,6 @@ class _HomePageState extends State<HomePage> {
       child: MaterialApp(
         home: SearchPage(),
         locale: Locale("ja", "JP"),
-        theme: ThemeData(fontFamily: "DroidJP"),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:jisho/models/sentence.dart';
+import 'package:jisho/utils/japanese.dart';
 
 class PhraseItem extends StatelessWidget {
   final Sentence sentence;
@@ -11,7 +12,9 @@ class PhraseItem extends StatelessWidget {
   List<TextSpan> highlight(String sentence, String pattern) {
     var list = new List<TextSpan>();
 
-    var marked = sentence.replaceAllMapped(pattern, (m) => "§${m.pattern}#");
+    var p = RegExp("($pattern)", caseSensitive: false);
+
+    var marked = sentence.replaceAllMapped(p, (m) => "§${m.group(0)}#");
     marked += "§";
 
     var tmp = "";
@@ -24,10 +27,15 @@ class PhraseItem extends StatelessWidget {
           tmp = "";
           break;
         case "#":
-          list.add(TextSpan(
-              text: pattern,
-              style:
-                  TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)));
+          list.add(
+            TextSpan(
+              text: tmp,
+              style: TextStyle(
+                color: Colors.blue,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
           tmp = "";
           break;
         default:
@@ -39,22 +47,38 @@ class PhraseItem extends StatelessWidget {
     return list;
   }
 
+  get isJapanese => Japanese.hasKanji(query) || Japanese.hasKana(query);
+
+  Widget buildText(text, cond, {TextStyle style}) {
+    if (cond) {
+      return RichText(
+        text: TextSpan(
+          style: style,
+          children: highlight(text, query),
+        ),
+      );
+    } else {
+      return Text(text, style: style);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(DefaultTextStyle.of(context).style);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        RichText(
-          text: TextSpan(
+        buildText(sentence.jap, isJapanese,
             style: TextStyle(
-              color: Colors.black,
+              color: Color(0xdd000000),
               fontSize: 18,
               fontFamily: "DroidJP",
-            ),
-            children: highlight(sentence.jpn, query),
-          ),
-        ),
-        Text(sentence.eng),
+            )),
+        buildText(sentence.eng, !isJapanese,
+            style: TextStyle(
+              color: Colors.grey[800],
+            ))
       ],
     );
   }

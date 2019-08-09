@@ -1,6 +1,7 @@
 import 'package:jisho/data/app_database.dart';
 import 'package:jisho/data/cache.dart';
 import 'package:jisho/data/history_dao.dart';
+import 'package:jisho/data/sentence_dao.dart';
 import 'package:jisho/data/word_dao.dart';
 import 'package:jisho/models/sentence.dart';
 import 'package:jisho/models/word.dart';
@@ -13,6 +14,8 @@ class Repository {
 
   final _historyDao = HistoryDao();
   final _historyCache = Cache<List<Word>>();
+
+  final _sentenceDao = SentenceDao();
 
   AppDatabase _database;
 
@@ -88,8 +91,7 @@ class Repository {
     return result;
   }
 
-  Future<List<Sentence>> findPhrases(String query) async {
-    // return await database.findPhrases(query);
-    return Future<List<Sentence>>.value([]);
+  Future<List<Sentence>> getSentences(String query) async {
+    return await _sentenceDao.getSentences(query);
   }
 }

@@ -8,7 +8,7 @@ class PhrasesTab extends StatelessWidget {
   PhrasesTab(this.word);
 
   getPhrases(text) async {
-    return await Repository.get().findPhrases(text);
+    return await Repository.get().getSentences(text);
   }
 
   final fallbackMessage = Text("Sorry, no phrases for this word.");

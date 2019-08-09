@@ -58,7 +58,7 @@ class _WordsSearchResultsState extends SearchResultsState {
   void onSearch(value) {
     print("update: $value");
     if (_wordBloc.currentState is WordsLoading) {
-      // cancel previous dispatch in same way...??
+      // cancel previous dispatch in some way...??
     }
     _wordBloc.dispatch(FetchWords(value));
   }
