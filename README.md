@@ -1,27 +1,16 @@
 # jisho
 
-Japanese Dictionary App
+A new Flutter project.
 
-Features:
- - Search for words, kanji and sentences
- - Word details (Related kanji and sentences)
- - Add words to favorites
- - History of words opened
- 
-TODO:
- - [x] Search for sentences
- - [ ] Search for names
- - [ ] Mixed Search
- - [ ] Add Radicals
- - [ ] Conjugations
- - [ ] Add misc/tag information to words
- - [ ] History for all catgories
- - [ ] Favorites for all catgories
- - [ ] Groups the readings of same kanji
- - [ ] JLPT kanji list
- - [ ] DBPedia Definition
- - [ ] About page
- - [ ] Settings page
- - [ ] Improve english search
- - [ ] Improve results sorting
- - [ ] Pagination?
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+
+For help getting started with Flutter, view our
+[online documentation](https://flutter.dev/docs), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
