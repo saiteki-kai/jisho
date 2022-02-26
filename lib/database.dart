@@ -14,14 +14,18 @@ class Database {
 
   static Database get instance => _instance;
 
-  Store? _store;
+  Completer<Store>? _completer;
 
   Future<Store> get store async {
-    _store ??= await _openDatabaseStore();
-    return Future.value(_store);
+    if (_completer == null) {
+      _completer = Completer();
+      _openDatabaseStore();
+    }
+
+    return _completer!.future;
   }
 
-  Future<Store> _openDatabaseStore() async {
+  void _openDatabaseStore() async {
     final dir = await getApplicationDocumentsDirectory();
     final dbDir = Directory(join(dir.path, "objectbox"));
 
@@ -29,7 +33,12 @@ class Database {
       await _copyDatabaseFromAssets(dbDir);
     }
 
-    return openStore(directory: dbDir.path);
+    try {
+      final store = await openStore(directory: dbDir.path);
+      _completer!.complete(store);
+    } catch (e) {
+      _completer!.completeError(e);
+    }
   }
 
   Future<void> _copyDatabaseFromAssets(Directory directory) async {
