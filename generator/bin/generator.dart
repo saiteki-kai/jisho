@@ -10,10 +10,11 @@ Future<List<WordEntry>> getWordEntries() async {
 
   final entries = <WordEntry>[];
 
-  data.forEach((word) {
+  for (dynamic word in data) {
     final id = word["ent_seq"][0];
 
-    if (id == 999999) return;
+    // skip last entry
+    if (id == "9999999") continue;
 
     final wordEntry = WordEntry(id: int.parse(id));
 
@@ -71,22 +72,21 @@ Future<List<WordEntry>> getWordEntries() async {
         return Gloss(type: ge["type"], text: ge["text"]);
       }).toList();
 
-      sense.gloss.addAll(glosses);
+      sense.gloss.addAll(glosses.isNotEmpty ? glosses : null);
 
       senses.add(sense);
     });
 
-    wordEntry.kanji.addAll(kanji);
-    wordEntry.reading.addAll(readings);
-    wordEntry.sense.addAll(senses);
+    if (kanji.isNotEmpty) wordEntry.kanji.addAll(kanji);
+    if (readings.isNotEmpty) wordEntry.reading.addAll(readings);
+    if (senses.isNotEmpty) wordEntry.sense.addAll(senses);
 
     entries.add(wordEntry);
-  });
+  }
 
   return Future.value(entries);
 }
 
-// Run: flutter pub run lib/preload.dart
 void main(List<String> args) async {
   List<WordEntry> words = await getWordEntries();
 
