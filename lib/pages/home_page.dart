@@ -78,38 +78,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Container _buildCustomAppBar() {
-    final height = MediaQuery.of(context).viewPadding.top;
-
-    return Container(
-      padding: EdgeInsets.only(top: height),
-      decoration: const BoxDecoration(
-        color: Colors.red,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black54,
-            blurRadius: 2.0,
-            offset: Offset(0.0, 0.75),
-          )
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _buildSearchBar(),
-          _buildTabs(),
-        ],
-      ),
-    );
-  }
-
   Widget _buildWordList(context, WordsLoaded state) {
     var words = state.words;
     words = words.skip(777).take(20).toList();
 
     return ListView.separated(
-      padding: EdgeInsets.zero,
       shrinkWrap: true,
+      padding: EdgeInsets.zero,
       itemCount: words.length,
       itemBuilder: (context, index) {
         var kanji = words.elementAt(index).kanji;
@@ -132,32 +107,68 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _buildCustomAppBar() {
+    final height = MediaQuery.of(context).viewPadding.top;
+
+    return Material(
+      color: Colors.red,
+      elevation: 2,
+      child: Container(
+        padding: EdgeInsets.only(top: height + 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildMenu(),
+            _buildTabs(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenu() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Expanded(child: _buildSearchBar()),
+          IconButton(
+            icon: Icon(
+              Icons.more_vert,
+              color: Colors.white,
+            ),
+            tooltip: "Menu",
+            onPressed: (() => print("2")),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSearchBar() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 4.0),
-      child: TextField(
-        // controller: queryController,
-        autofocus: true,
-        onChanged: (String value) {
-          // widget.onChange(value);
-        },
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.white.withOpacity(0.9),
-          // isDense: true,
-          contentPadding: const EdgeInsets.only(top: 12),
-          hintText: "Search for words, kanji, names and sentences",
-          border: OutlineInputBorder(
-            borderSide: BorderSide.none,
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          // hintStyle: TextStyle(color: widget.mainTextColor.withAlpha(100),),
-          prefixIcon: const Icon(Icons.search),
-          suffixIcon: GestureDetector(
-            child: Icon(
-              Icons.clear,
-              color: Colors.black.withOpacity(0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFFe9eaec),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const TextField(
+          cursorColor: Color(0xFF000000),
+          cursorRadius: Radius.circular(8.0),
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.only(top: 16.0),
+            isCollapsed: true,
+            isDense: true,
+            hintText: "Search",
+            hintStyle: TextStyle(color: Colors.grey),
+            border: InputBorder.none,
+            prefixIcon: Icon(
+              Icons.search,
+              // color: const Color(0xFF000000).withOpacity(0.5),
             ),
+            suffixIcon: Icon(Icons.close),
           ),
         ),
       ),
@@ -165,24 +176,33 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildTabs() {
-    return TabBar(
-      tabs: const [
-        Tab(text: "Words"),
-        Tab(text: "Kanji"),
-        Tab(text: "Names"),
-        Tab(text: "Sentences"),
-      ],
-      isScrollable: true,
-      labelStyle: const TextStyle(fontWeight: FontWeight.w400),
-      labelPadding: const EdgeInsets.symmetric(horizontal: 24.0),
-      labelColor: Colors.white,
-      indicator: MaterialIndicator(
-        height: 3,
-        topLeftRadius: 4,
-        topRightRadius: 4,
-        horizontalPadding: 16,
-        tabPosition: TabPosition.bottom,
-        color: Colors.white,
+    return Theme(
+      // remove highlight effect from tabs
+      data: ThemeData(
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
+      ),
+      child: Container(
+        child: TabBar(
+          tabs: const [
+            Tab(text: "Words"),
+            Tab(text: "Kanji"),
+            Tab(text: "Names"),
+            Tab(text: "Sentences"),
+          ],
+          isScrollable: true,
+          labelStyle: const TextStyle(fontWeight: FontWeight.w400),
+          labelPadding: const EdgeInsets.symmetric(horizontal: 24.0),
+          labelColor: Colors.white,
+          indicator: MaterialIndicator(
+            height: 3,
+            topLeftRadius: 4,
+            topRightRadius: 4,
+            horizontalPadding: 16,
+            tabPosition: TabPosition.bottom,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }
