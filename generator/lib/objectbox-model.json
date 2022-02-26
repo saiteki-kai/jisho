@@ -1,0 +1,206 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:5465389464763670641",
+      "lastPropertyId": "3:8207188119227123443",
+      "name": "Gloss",
+      "properties": [
+        {
+          "id": "1:2201652406963449024",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:199321494178089412",
+          "name": "text",
+          "type": 9,
+          "flags": 2048,
+          "indexId": "1:2239603432638709468"
+        },
+        {
+          "id": "3:8207188119227123443",
+          "name": "type",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:6795119589062125692",
+      "lastPropertyId": "4:1427312206460182407",
+      "name": "Kanji",
+      "properties": [
+        {
+          "id": "1:557559483226203806",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:290906095629450178",
+          "name": "text",
+          "type": 9,
+          "flags": 2048,
+          "indexId": "2:1035453860399978253"
+        },
+        {
+          "id": "3:3193979056744236345",
+          "name": "info",
+          "type": 30
+        },
+        {
+          "id": "4:1427312206460182407",
+          "name": "common",
+          "type": 1
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:9067311017714686474",
+      "lastPropertyId": "5:2868518844698070274",
+      "name": "Reading",
+      "properties": [
+        {
+          "id": "1:732351382141466127",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:5696991321750584842",
+          "name": "text",
+          "type": 9,
+          "flags": 2048,
+          "indexId": "3:1086156369267436292"
+        },
+        {
+          "id": "3:5894972871940959002",
+          "name": "info",
+          "type": 30
+        },
+        {
+          "id": "4:4538148117300009945",
+          "name": "restrictedTo",
+          "type": 30
+        },
+        {
+          "id": "5:2868518844698070274",
+          "name": "common",
+          "type": 1
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:572959809601206590",
+      "lastPropertyId": "10:7665057755056875639",
+      "name": "Sense",
+      "properties": [
+        {
+          "id": "1:3987952687589469546",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2769809858212234524",
+          "name": "pos",
+          "type": 9
+        },
+        {
+          "id": "3:1713153040726161419",
+          "name": "related",
+          "type": 30
+        },
+        {
+          "id": "4:5721425407940827990",
+          "name": "antonym",
+          "type": 30
+        },
+        {
+          "id": "5:3980747825953468483",
+          "name": "field",
+          "type": 30
+        },
+        {
+          "id": "6:8435788726515734466",
+          "name": "dialect",
+          "type": 30
+        },
+        {
+          "id": "7:398675864466282560",
+          "name": "misc",
+          "type": 30
+        },
+        {
+          "id": "8:2563014079544963812",
+          "name": "info",
+          "type": 30
+        },
+        {
+          "id": "9:2510042711457747249",
+          "name": "stagk",
+          "type": 30
+        },
+        {
+          "id": "10:7665057755056875639",
+          "name": "stagr",
+          "type": 30
+        }
+      ],
+      "relations": [
+        {
+          "id": "1:6184392229858297114",
+          "name": "gloss",
+          "targetId": "1:5465389464763670641"
+        }
+      ]
+    },
+    {
+      "id": "5:6056800021693025944",
+      "lastPropertyId": "1:6499450520459820979",
+      "name": "WordEntry",
+      "properties": [
+        {
+          "id": "1:6499450520459820979",
+          "name": "id",
+          "type": 6,
+          "flags": 129
+        }
+      ],
+      "relations": [
+        {
+          "id": "2:4313437004292146637",
+          "name": "kanji",
+          "targetId": "2:6795119589062125692"
+        },
+        {
+          "id": "3:969599822351203182",
+          "name": "reading",
+          "targetId": "3:9067311017714686474"
+        },
+        {
+          "id": "4:8753702223357579575",
+          "name": "sense",
+          "targetId": "4:572959809601206590"
+        }
+      ]
+    }
+  ],
+  "lastEntityId": "5:6056800021693025944",
+  "lastIndexId": "3:1086156369267436292",
+  "lastRelationId": "4:8753702223357579575",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}
