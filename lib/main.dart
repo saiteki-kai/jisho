@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jisho/cubit/word_cubit.dart';
 import 'package:jisho/data/repositories/word.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 
 void main() {
@@ -36,6 +37,28 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool permissionGranted = false;
+
+  Future _getStoragePermission() async {
+    if (await Permission.storage.request().isGranted) {
+      setState(() {
+        permissionGranted = true;
+      });
+    } else if (await Permission.storage.request().isPermanentlyDenied) {
+      await openAppSettings();
+    } else if (await Permission.storage.request().isDenied) {
+      setState(() {
+        permissionGranted = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    _getStoragePermission();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<WordCubit>(context);
@@ -115,9 +138,9 @@ class _MyHomePageState extends State<MyHomePage> {
       itemCount: words.length,
       itemBuilder: (context, index) {
         var kanji = words.elementAt(index).kanji;
-        var text;
+        String? text;
 
-        if (kanji.length > 0) {
+        if (kanji.isNotEmpty) {
           text = kanji[0].text;
         } else {
           text = words.elementAt(index).reading[0].text;
@@ -125,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
         return Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Text(text),
+          child: Text(text!),
         );
       },
       separatorBuilder: (context, index) {
