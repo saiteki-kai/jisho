@@ -4,7 +4,9 @@ import 'package:jisho/cubit/word_cubit.dart';
 import 'package:jisho/data/repositories/word.dart';
 import 'package:jisho/pages/home_page.dart';
 
+
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 

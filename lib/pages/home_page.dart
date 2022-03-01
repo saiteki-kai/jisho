@@ -31,14 +31,13 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     _getStoragePermission();
+    final bloc = BlocProvider.of<WordCubit>(context);
+    bloc.getWords("昨日");
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<WordCubit>(context);
-    bloc.getWords();
-
     return DefaultTabController(
       length: 4,
       initialIndex: 0,
@@ -80,7 +79,6 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildWordList(context, WordsLoaded state) {
     var words = state.words;
-    words = words.skip(777).take(20).toList();
 
     return ListView.separated(
       shrinkWrap: true,
@@ -98,7 +96,7 @@ class _HomePageState extends State<HomePage> {
 
         return Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Text(text!),
+          child: Text(text),
         );
       },
       separatorBuilder: (context, index) {
@@ -147,6 +145,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildSearchBar() {
+    final _controller = TextEditingController();
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: Container(
@@ -154,10 +154,11 @@ class _HomePageState extends State<HomePage> {
           color: const Color(0xFFe9eaec),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const TextField(
-          cursorColor: Color(0xFF000000),
-          cursorRadius: Radius.circular(8.0),
-          decoration: InputDecoration(
+        child: TextField(
+          controller: _controller,
+          cursorColor: const Color(0xFF000000),
+          cursorRadius: const Radius.circular(8.0),
+          decoration: const InputDecoration(
             contentPadding: EdgeInsets.only(top: 16.0),
             isCollapsed: true,
             isDense: true,
