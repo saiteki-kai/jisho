@@ -2,20 +2,22 @@ import 'package:jisho/data/model/word.dart';
 import 'package:jisho/data/sql_database.dart';
 import 'package:jisho/utils/japanese.dart';
 import 'package:sqflite/sqlite_api.dart';
+import 'dart:math';
 
 class WordRepository {
-  Future<Database> get _db async => await AppDatabase.instance.db;
-
   const WordRepository();
+
+  Future<Database> get _db async => await AppDatabase.instance.db;
 
   Future<List<WordEntry>> getWords(String term) async {
     final db = await _db;
 
     List<int> word_ids = [];
+    List<Map<String, Object?>> res = [];
 
     if (Japanese.isJapanese(term)) {
       if (Japanese.hasKanji(term)) {
-        final res = await db.query(
+        res = await db.query(
           "kanji",
           distinct: true,
           columns: ["word_id"],
@@ -23,15 +25,31 @@ class WordRepository {
           whereArgs: ["%$term%"],
           orderBy: "common DESC, kanji_id ASC",
         );
-        word_ids = res.map((e) => int.parse(e["word_id"].toString())).toList();
-      } else {}
+      } else {
+        res = await db.query(
+          "reading",
+          distinct: true,
+          columns: ["word_id"],
+          where: "text LIKE ?",
+          whereArgs: ["%$term%"],
+          orderBy: "common DESC, reading_id ASC",
+        );
+      }
     } else {}
+
+    word_ids = res
+        .map((e) => int.parse(e["word_id"].toString()))
+        .toList()
+        .sublist(0, min(res.length, 1000));
+    print((word_ids).length);
 
     // retrieve all entries from word_ids
     List<WordEntry> words = [];
+    final stopwatch = Stopwatch()..start();
     for (int word_id in word_ids) {
       words.add(await getEntry(db, word_id));
     }
+    print(stopwatch.elapsed);
     return words;
   }
 
