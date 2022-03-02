@@ -17,7 +17,7 @@ class WordCubit extends Cubit<WordsState> {
       return;
     }
 
-    emit(const WordsLoading());
+    // emit(const WordsLoading());
     final words = await repository.getWords(term!);
     emit(WordsLoaded(words));
   }
