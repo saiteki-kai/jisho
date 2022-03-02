@@ -21,14 +21,14 @@ class Tag(BaseTable):
 
 class Kanji(BaseTable):
     kanji_id = PrimaryKeyField()
-    text = TextField(null=True)
+    text = TextField(null=True, index=True)
     common = BooleanField()
     word = ForeignKeyField(Word, backref='kanji', null=True)
 
 
 class Reading(BaseTable):
     reading_id = PrimaryKeyField()
-    text = TextField()
+    text = TextField(index=True)
     common = BooleanField()
     word = ForeignKeyField(Word, backref='reading', null=True)
 

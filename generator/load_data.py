@@ -57,4 +57,3 @@ def load_words():
                 for k in r_ele["re_restr"]:
                     pass
                     # TODO: decide how to store this
-
