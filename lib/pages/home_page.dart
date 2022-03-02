@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jisho/cubit/word_cubit.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:tab_indicator_styler/tab_indicator_styler.dart';
+
+import 'package:jisho/cubit/word_cubit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -28,12 +32,22 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  final _controller = StreamController<String>();
+
   @override
   void initState() {
     _getStoragePermission();
     final bloc = BlocProvider.of<WordCubit>(context);
-    bloc.getWords("昨日");
+    _controller.stream
+        .debounce((_) => TimerStream(true, Duration(milliseconds: 300)))
+        .listen((value) => bloc.getWords(value));
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.close();
+    super.dispose();
   }
 
   @override
@@ -137,7 +151,7 @@ class _HomePageState extends State<HomePage> {
               color: Colors.white,
             ),
             tooltip: "Menu",
-            onPressed: (() => print("2")),
+            onPressed: (() => print("")),
           ),
         ],
       ),
@@ -145,21 +159,26 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildSearchBar() {
-    final _controller = TextEditingController();
-
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: Container(
         decoration: BoxDecoration(
           color: const Color(0xFFe9eaec),
           borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black38,
+              blurRadius: 5, // 25
+              offset: const Offset(0, 2), // 0, 10
+            )
+          ],
         ),
         child: TextField(
-          controller: _controller,
+          onChanged: _controller.sink.add,
           cursorColor: const Color(0xFF000000),
           cursorRadius: const Radius.circular(8.0),
           decoration: const InputDecoration(
-            contentPadding: EdgeInsets.only(top: 16.0),
+            contentPadding: EdgeInsets.only(top: 12.0),
             isCollapsed: true,
             isDense: true,
             hintText: "Search",
